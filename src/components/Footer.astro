@@ -1,0 +1,57 @@
+---
+import { footerNavigation, serviceItems, site } from "../data/site";
+---
+<footer class="bg-white flex flex-col gap-16 items-start pb-[50px] pt-20 px-[60px] w-full">
+  <div class="flex items-start justify-between w-full flex-wrap gap-12">
+    <div class="flex flex-col gap-5 items-start w-[339px]">
+      <div class="flex flex-col gap-7 items-start w-full">
+        <div class="bg-ink w-full aspect-[149/45] rounded-sm" aria-label="Firmenlogo"></div>
+        <p class="font-normal text-base text-ink/60 leading-[1.5]">
+          Mittelständisches Bauunternehmen aus Goch, NRW – mit Fokus auf Qualität, Termintreue und nachhaltige Bauprojekte.
+        </p>
+      </div>
+    </div>
+
+    <div class="flex gap-[54px] items-start text-ink text-base flex-wrap">
+      <div class="flex flex-col gap-5 items-start w-[197px]">
+        <p class="font-semibold leading-[1.2] tracking-[-0.64px] uppercase">Navigation</p>
+        <div class="flex flex-col gap-3 items-start font-normal">
+          {footerNavigation.map((item) => <a href={item.href} class="leading-[1.5] hover:text-accent">{item.label}</a>)}
+        </div>
+      </div>
+      <div class="flex flex-col gap-5 items-start w-[196px]">
+        <p class="font-semibold leading-[1.2] tracking-[-0.64px] uppercase">Leistungen</p>
+        <div class="flex flex-col gap-3 items-start font-normal">
+          {serviceItems.map((item) => <a href="/leistungen" class="leading-[1.5] hover:text-accent">{item}</a>)}
+        </div>
+      </div>
+      <div class="flex flex-col gap-5 items-start w-[197px]">
+        <p class="font-semibold leading-[1.2] tracking-[-0.64px] uppercase">Kontakt</p>
+        <div class="flex flex-col gap-3 items-start font-normal">
+          <a href={site.phoneHref} class="leading-[1.5] hover:text-accent">{site.phone}</a>
+          <a href={site.emailHref} class="leading-[1.5] hover:text-accent">{site.email}</a>
+          <p class="leading-[1.5]">{site.address}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="border-t border-[#dbe0ec] flex items-center justify-between pt-[18px] w-full flex-wrap gap-4">
+    <p class="font-normal text-ink text-base">© {new Date().getFullYear()} · {site.name}</p>
+    <div class="flex gap-5 items-center flex-wrap">
+      <div class="flex gap-5 items-center text-ink whitespace-nowrap">
+        <a href="/impressum" class="text-base hover:text-accent">Impressum</a>
+        <a href="/datenschutz" class="text-base hover:text-accent">Datenschutz</a>
+      </div>
+      <div class="bg-[#f6f8fb] border border-navy flex gap-3 items-center pl-3 pr-[18px] py-2.5 rounded-lg shrink-0">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#07255C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="flex flex-col gap-0.5 items-start text-xs whitespace-nowrap">
+          <span class="font-semibold text-navy">Präqualifiziert</span>
+          <span class="font-normal text-[rgba(5,104,253,0.7)]">{site.registration}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

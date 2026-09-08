@@ -1,0 +1,83 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+
+const residential = [
+  { title: "Errichtung von 3 Mehrfamilienhäusern mit je 23 Wohneinheiten", location: "Moerser Straße 403–407, Kamp-Lintfort", gfa: "6.001 m²", date: "01/2022" },
+  { title: "Errichtung von 10 Reihenhäusern", location: "Birkenallee 10a–j, Kalkar", gfa: "1.724 m²", date: "06/2023" },
+  { title: "Errichtung von 2 Mehrfamilienhäusern mit 7 Wohneinheiten und 1 Doppelhaus", location: "Birkenallee 12a–c, Kalkar", gfa: "1.385 m²", date: "09/2023" },
+  { title: "Errichtung eines Mehrfamilienhauses mit 11 Wohneinheiten", location: "Postweg 14c, Kalkar", gfa: "1.350 m²", date: "08/2024" },
+  { title: "Errichtung von 5 Reihenhäusern mit Garagen", location: "Alpener Straße 304, Rheinberg", gfa: "932 m²", date: "11/2024" },
+  { title: "Errichtung von 12 Doppelhaushälften mit Garagen", location: "Alte Heerstraße 37–59, Weeze", gfa: "2.868 m²", date: "12/2024" },
+  { title: "Errichtung eines Mehrfamilienhauses mit 21 Wohneinheiten", location: "Fichtenweg 2a, Kalkar", gfa: "2.184 m²", date: "12/2024" },
+  { title: "Neubau von 8 Reihenhäusern und 1 Mehrfamilienhaus", location: "Kevelaererstraße 90–100, Weeze", gfa: "2.407 m²", date: "05/2025" },
+  { title: "Neubau von 3 Doppelhäusern mit Garagen", location: "Parkstraße, Sonsbeck", gfa: "1.188 m²", date: "05/2025" },
+  { title: "Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2.497 m²", date: "10/2025" },
+  { title: "Neubau eines Mehrfamilienhauses mit 31 Wohneinheiten und Stellplatzanlage", location: "Ernst-Holla-Straße 9a–d, Moers", gfa: "3.453 m²", date: "02/2026" },
+  { title: "Neubau Doppelhaus mit Garage", location: "Nierspaß 7+7a, Goch", gfa: "468 m²", date: "02/2026" },
+  { title: "Neubau von 6 Doppelhaushälften und 5 Garagen", location: "Paulstraße 8a+8b / Ebertstraße 84a–d, Kamp-Lintfort", gfa: "1.146 m²", date: "06/2026" },
+];
+
+const commercial = [
+  { title: "Errichtung von 2 Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2.497 m²", date: "10/2025", status: "Fertiggestellt" },
+  { title: "Errichtung von 2 Gewerbehallen und 7 Gebäuden mit 136 Garagen", location: "Derner Straße 11, Lünen", gfa: "4.480 m²", date: "Im Bau", status: "In Arbeit" },
+  { title: "Neubau einer Gewerbehalle und 7 Gebäuden für 148 Garagen", location: "Empeler Straße 91a, Rees", gfa: "4.633 m²", date: "Im Bau", status: "In Arbeit" },
+  { title: "Umbau Bürogebäude, Lagerhalle und Waschstraße", location: "Borsigstraße 2, Goch", gfa: "3.540 m²", date: "Im Bau", status: "In Arbeit" },
+];
+
+const images = Array.from({ length: 9 }, (_, i) => `/images/ref-project-${i + 1}.jpg`);
+---
+<Layout title="Referenzen | Bauunternehmen Goch, NRW" description="80+ abgeschlossene Bauprojekte in NRW – Wohn- und Gewerbebau.">
+  <section class="bg-white flex flex-col gap-4 items-start px-[60px] pt-16 pb-10 w-full">
+    <h1 class="font-display text-ink text-[44px] tracking-[-1.6px]">Referenzen</h1>
+    <p class="font-normal text-[#171b1f] text-lg leading-[1.4] max-w-[600px]">
+      Über 80 abgeschlossene Projekte in Nordrhein-Westfalen — vom Einfamilienhaus bis zur Gewerbehalle.
+    </p>
+  </section>
+
+  <section class="bg-white flex flex-col gap-10 items-start px-[60px] pb-20 w-full">
+    <h2 class="font-display text-ink text-[28px] tracking-[-1px]">Einfamilien-, Doppel-, Reihen- und Mehrfamilienhäuser</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+      {residential.map((p, i) => (
+        <div class="flex flex-col gap-4 rounded-2xl overflow-hidden border border-sand">
+          <div class="h-[200px] w-full overflow-hidden">
+            <img src={images[i % images.length]} alt={p.title} class="w-full h-full object-cover" />
+          </div>
+          <div class="flex flex-col gap-2 px-5 pb-5">
+            <div class="flex items-center gap-1.5">
+              <span class="bg-[#136627] size-1.5 shrink-0 rounded-full"></span>
+              <p class="font-medium text-ink text-xs">Fertiggestellt {p.date}</p>
+            </div>
+            <h3 class="font-semibold text-ink text-base leading-[1.3]">{p.title}</h3>
+            <p class="text-muted text-sm">{p.location}</p>
+            <p class="text-muted text-sm">GFA: {p.gfa}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="bg-sand/30 flex flex-col gap-10 items-start px-[60px] py-20 w-full">
+    <h2 class="font-display text-ink text-[28px] tracking-[-1px]">Bürogebäude, Gewerbe- und Garagenhallen</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      {commercial.map((p, i) => (
+        <div class="flex flex-col gap-4 rounded-2xl overflow-hidden border border-sand bg-white">
+          <div class="h-[160px] w-full overflow-hidden">
+            <img src={images[(i + 4) % images.length]} alt={p.title} class="w-full h-full object-cover" />
+          </div>
+          <div class="flex flex-col gap-2 px-5 pb-5">
+            <div class="flex items-center gap-1.5">
+              <span class:list={["size-1.5 shrink-0 rounded-full", p.status === "Fertiggestellt" ? "bg-[#136627]" : "bg-accent"]}></span>
+              <p class="font-medium text-ink text-xs">{p.status} · {p.date}</p>
+            </div>
+            <h3 class="font-semibold text-ink text-base leading-[1.3]">{p.title}</h3>
+            <p class="text-muted text-sm">{p.location}</p>
+            <p class="text-muted text-sm">GFA: {p.gfa}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <ContactCTA />
+</Layout>

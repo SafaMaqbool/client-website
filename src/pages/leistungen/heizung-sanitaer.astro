@@ -1,0 +1,46 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LeistungenNav from "../../components/LeistungenNav.astro";
+import ContactCTA from "../../components/ContactCTA.astro";
+import NumberedList from "../../components/NumberedList.astro";
+import ListItem from "../../components/ListItem.astro";
+---
+<Layout title="Heizung- und Sanitärarbeiten | Bauunternehmen Goch, NRW" description="Modern, energieeffizient, nachhaltig.">
+  <LeistungenNav />
+
+  <section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
+    <div class="flex flex-1 flex-col gap-6 items-start">
+      <p class="font-medium text-accent text-sm uppercase tracking-wide">Heizung- und Sanitärarbeiten</p>
+      <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">Modern. Energieeffizient. Nachhaltig.</h1>
+      <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">
+        Im Bereich Heizungs- und Sanitärtechnik bieten wir moderne, energieeffiziente und nachhaltige Lösungen für Neubau und Bestand. Unser besonderer Fokus liegt auf der Planung und Installation von Wärmepumpensystemen als zukunftssichere Heiztechnologie.
+      </p>
+    </div>
+    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px]">
+      <img src="/images/heizung-hero.jpg" alt="Heizungs- und Sanitärarbeiten" class="w-full h-full object-cover" />
+    </div>
+  </section>
+
+  <section class="bg-white flex flex-col gap-10 items-start px-[60px] pb-20 w-full">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 w-full">
+      <NumberedList title="Heizung">
+        <ListItem number={1}>Fachgerechte Beratung und Planung individueller Heizungsanlagen</ListItem>
+        <ListItem number={2}>Installation von Wärmepumpen</ListItem>
+        <ListItem number={3}>Auslegung und Integration von Fußboden- und Flächenheizungen</ListItem>
+        <ListItem number={4}>Kombination mit Photovoltaik- und Energiemanagementsystemen</ListItem>
+        <ListItem number={5}>Modernisierung und Austausch bestehender Heizungsanlagen</ListItem>
+        <ListItem number={6}>Installation von Warmwasser- und Speicherlösungen</ListItem>
+      </NumberedList>
+      <NumberedList title="Sanitär">
+        <ListItem number={1}>Sanitärinstallationen im Neubau und Altbau / Sanierung</ListItem>
+        <ListItem number={2}>Verlegung von Zu- und Abwasserleitungen</ListItem>
+      </NumberedList>
+    </div>
+    <NumberedList title="Service & Wartung">
+      <ListItem number={1}>Wartung, Inspektion und Instandhaltung von Heizungsanlagen</ListItem>
+      <ListItem number={2}>Wartung, Inspektion und Instandhaltung von Sanitäranlagen</ListItem>
+    </NumberedList>
+  </section>
+
+  <ContactCTA />
+</Layout>

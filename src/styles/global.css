@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Gantari:wght@400;500;600;700&family=Armata&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1d1b24;
+  --color-accent: #d14351;
+  --color-sand: #dbd5ca;
+  --color-skyblue: #c5d3e8;
+  --color-skyblueLine: #a9abe3;
+  --color-navy: #07255c;
+  --color-muted: #6a6a6a;
+  --font-sans: 'Gantari', sans-serif;
+  --font-display: 'Armata', serif;
+}
+
+body {
+  font-family: 'Gantari', sans-serif;
+  color: #1d1b24;
+}

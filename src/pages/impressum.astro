@@ -1,0 +1,35 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data/site";
+---
+<Layout title="Impressum | Bauunternehmen Goch, NRW" description="Impressum und rechtliche Informationen des Bauunternehmens aus Goch, NRW.">
+  <section class="bg-white flex flex-col gap-6 px-[60px] py-16 w-full">
+    <h1 class="font-display text-ink text-[44px] tracking-[-1.6px]">Impressum</h1>
+
+    <div class="max-w-[760px] flex flex-col gap-6 text-ink">
+      <div>
+        <h2 class="font-semibold text-2xl mb-2">Anbieter</h2>
+        <p>{site.legalName}</p>
+        <p>{site.address}</p>
+      </div>
+
+      <div>
+        <h2 class="font-semibold text-2xl mb-2">Kontakt</h2>
+        <p>Telefon: <a href={site.phoneHref} class="text-accent underline underline-offset-4">{site.phone}</a></p>
+        <p>E-Mail: <a href={site.emailHref} class="text-accent underline underline-offset-4">{site.email}</a></p>
+      </div>
+
+      <div>
+        <h2 class="font-semibold text-2xl mb-2">Register</h2>
+        <p>{site.registration}</p>
+        <p>USt-IdNr.: {site.vatId}</p>
+      </div>
+
+      <div>
+        <h2 class="font-semibold text-2xl mb-2">Verantwortlich für den Inhalt</h2>
+        <p>Geschäftsführung</p>
+        <p>{site.legalName}</p>
+      </div>
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,22 @@
+---
+interface Props {
+  kicker: string;
+  title: string;
+  description: string;
+  image?: string;
+  imageAlt?: string;
+}
+const { kicker, title, description, image, imageAlt = "" } = Astro.props;
+---
+<section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
+  <div class="flex flex-1 flex-col gap-6 items-start">
+    <p class="font-medium text-accent text-sm uppercase tracking-wide">{kicker}</p>
+    <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">{title}</h1>
+    <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">{description}</p>
+  </div>
+  {image && (
+    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px]">
+      <img src={image} alt={imageAlt} class="w-full h-full object-cover" />
+    </div>
+  )}
+</section>

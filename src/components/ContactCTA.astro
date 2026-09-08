@@ -1,0 +1,47 @@
+---
+import Button from "./Button.astro";
+import { site } from "../data/site";
+---
+<section class="border-b border-sand flex items-center justify-center pb-[60px] pt-20 px-[60px] w-full">
+  <div class="flex flex-col md:flex-row items-center justify-between gap-12 w-full">
+    <div class="flex flex-col gap-8 items-start max-w-[456px]">
+      <div class="flex flex-col gap-4 items-start text-ink w-full">
+        <h2 class="font-display text-[48px] tracking-[-0.96px] leading-normal">
+          Sprechen wir über<br />Ihr Projekt.
+        </h2>
+        <p class="font-normal text-lg leading-[1.2] tracking-[-0.72px]">
+          Unverbindlich, direkt und auf Augenhöhe. Kontaktieren Sie uns; wir sind für Sie da.
+        </p>
+      </div>
+      <Button href="/kontakt">Kontaktieren Sie uns</Button>
+    </div>
+
+    <div class="flex flex-col items-start w-full max-w-[492px]">
+      <div class="flex items-center gap-8 py-6 px-4 w-full">
+        <svg width="54" height="54" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="#1D1B24" stroke-width="1.5"/></svg>
+        <div class="flex flex-1 flex-col gap-3 items-start">
+          <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">Telefon</p>
+          <a href={site.phoneHref} class="font-semibold text-ink text-xl leading-none hover:text-accent">{site.phone}</a>
+        </div>
+      </div>
+      <div class="border-t border-sand flex items-center gap-8 py-6 px-4 w-full">
+        <div class="bg-[#a9b9d6]/50 flex items-center justify-center p-2.5 rounded-lg size-[54px] shrink-0">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 4h16v16H4V4z" stroke="#1D1B24" stroke-width="1.5"/><path d="M4 6l8 7 8-7" stroke="#1D1B24" stroke-width="1.5"/></svg>
+        </div>
+        <div class="flex flex-1 flex-col gap-3 items-start">
+          <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">E-Mail</p>
+          <a href={site.emailHref} class="font-semibold text-ink text-xl leading-none hover:text-accent">{site.email}</a>
+        </div>
+      </div>
+      <div class="border-t border-sand flex items-center gap-8 py-6 px-4 w-full">
+        <div class="bg-[#a9b9d6]/50 flex items-center justify-center p-2.5 rounded-lg size-[54px] shrink-0">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" stroke="#1D1B24" stroke-width="1.5"/><circle cx="12" cy="10" r="3" stroke="#1D1B24" stroke-width="1.5"/></svg>
+        </div>
+        <div class="flex flex-1 flex-col gap-3 items-start">
+          <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">Adresse</p>
+          <h3 class="font-semibold text-ink text-xl leading-none">{site.address}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

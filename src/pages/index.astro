@@ -1,0 +1,165 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/Button.astro";
+import ContactCTA from "../components/ContactCTA.astro";
+
+const audiences = [
+  { label: "Private Auftraggeber" },
+  { label: "Gewerbliche Bauherren" },
+  { label: "Öffentliche Hand" },
+  { label: "Projektentwickler" },
+  { label: "Architekten & Planer" },
+];
+
+const stats = [
+  { value: "80+", label: "Projekte fertiggestellt" },
+  { value: "15+", label: "Jahre Erfahrung" },
+  { value: "25M€", label: "Umsatz in 2025" },
+];
+
+const services = [
+  { title: "Generalunternehmer- leistungen", image: "/images/service-1.jpg", href: "/leistungen/generalunternehmer" },
+  { title: "Planung und Architektur", image: "/images/service-2.jpg", href: "/leistungen/planung-architektur" },
+  { title: "Rohbauarbeiten", image: "/images/service-3.jpg", href: "/leistungen/rohbauarbeiten" },
+  { title: "Tiefbauarbeiten", image: "/images/service-4.jpg", href: "/leistungen/tiefbauarbeiten" },
+  { title: "Heizung- und Sanitärarbeiten", image: "/images/service-5.jpg", href: "/leistungen/heizung-sanitaer" },
+  { title: "Stahlhallenbau", image: "/images/service-6.jpg", href: "/leistungen/stahlhallenbau" },
+  { title: "Photovoltaikanlagen", image: "/images/service-7.jpg", href: "/leistungen/photovoltaikanlagen" },
+];
+---
+<Layout title="Wir bauen Zukunft! | Bauunternehmen Goch, NRW">
+  <!-- Hero -->
+  <section class="relative flex flex-col items-center pt-5 w-full overflow-hidden">
+    <img src="/images/hero-bg.jpg" alt="Baustelle mit Kran" class="absolute inset-0 w-full h-[766px] object-cover -z-10" />
+    <div class="absolute inset-0 bg-black/35 -z-10 h-[766px]"></div>
+
+    <div class="flex flex-col h-[667px] items-center justify-center relative w-full max-w-[1240px]">
+      <div class="flex flex-col gap-8 items-start max-w-[656px] mx-auto">
+        <div class="flex flex-col gap-4 items-start w-full">
+          <div class="flex gap-2.5 items-center">
+            <span class="bg-accent size-1.5 shrink-0"></span>
+            <p class="font-medium text-sm text-white leading-none whitespace-nowrap">Goch, NRW · Since 2009</p>
+          </div>
+          <div class="flex flex-col gap-1 font-semibold leading-none text-[65px] tracking-[-2.6px] w-full">
+            <h1 class="text-white">Wir bauen</h1>
+            <h1 class="text-accent">Zukunft!</h1>
+          </div>
+          <p class="font-normal text-white text-xl leading-[1.2] tracking-[-0.8px] max-w-[517px]">
+            Von der Planung bis zur schlüsselfertigen Übergabe. Wir decken das gesamte Spektrum des Bauens ab. Ein Partner, eine Verantwortung, ein Qualitätsanspruch.
+          </p>
+        </div>
+        <Button href="/kontakt" variant="dark">Kontaktieren Sie uns</Button>
+      </div>
+    </div>
+
+    <div class="bg-skyblue flex w-full max-w-[1156px] mx-auto">
+      {audiences.map((a, i) => (
+        <div class:list={["bg-skyblue flex-1 flex flex-col justify-center p-5", i < audiences.length - 1 && "border-r border-skyblueLine"]}>
+          <p class="font-bold text-base text-black leading-[1.5]">{a.label}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <!-- Über uns intro -->
+  <section class="bg-white flex flex-col md:flex-row gap-[100px] items-center px-[60px] py-20 w-full">
+    <div class="flex-1 h-[488px] rounded-lg overflow-hidden">
+      <img src="/images/about-card.jpg" alt="Energieverbrauchsdaten auf einem Display" class="w-full h-full object-cover" />
+    </div>
+    <div class="flex flex-1 flex-col gap-[50px] items-end justify-center">
+      <div class="flex flex-col gap-4 items-start w-full">
+        <div class="flex gap-2.5 items-center">
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p class="font-medium text-ink text-sm leading-none">Über uns</p>
+        </div>
+        <h2 class="font-display text-ink text-[40px] tracking-[-1.6px]">Regional und vertrauensvoller Partner.</h2>
+      </div>
+      <div class="flex gap-5 items-start w-full">
+        <p class="flex-1 font-normal text-[#171b1f] text-lg leading-[1.2] tracking-[-0.72px]">
+          Als regional verwurzeltes Unternehmen legen wir großen Wert auf eine partnerschaftliche Zusammenarbeit mit unseren Auftraggebern, Architekten und Nachunternehmern.
+        </p>
+        <p class="flex-1 font-normal text-[#171b1f] text-lg leading-[1.2] tracking-[-0.72px]">
+          Mit Innovationskraft und einem klaren Blick in die Zukunft entwickeln wir maßgeschneiderte Lösungen – von der ersten Idee bis zur erfolgreichen Umsetzung.
+        </p>
+      </div>
+      <Button href="/ueber-uns">mehr über uns</Button>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="bg-white flex flex-col md:flex-row gap-[30px] items-start pb-20 pt-10 px-[60px] w-full">
+    {stats.map((s) => (
+      <div class="bg-sand flex flex-1 flex-col gap-6 h-[237px] items-start px-10 py-8 rounded-2xl">
+        <div class="flex flex-col gap-2 items-start text-black w-full">
+          <h2 class="font-semibold leading-none text-[50px] tracking-[-1px] w-full">{s.value}</h2>
+          <p class="font-normal leading-[1.2] text-lg tracking-[-0.72px] w-full">{s.label}</p>
+        </div>
+      </div>
+    ))}
+  </section>
+
+  <!-- Construction photo banner -->
+  <section class="flex flex-col h-[500px] md:h-[635px] items-start px-6 w-full">
+    <img src="/images/construction-photo.jpg" alt="Bauarbeiter auf einer Baustelle" class="w-full h-full object-cover" />
+  </section>
+
+  <!-- Services -->
+  <section class="bg-white flex flex-col gap-[50px] items-start px-[60px] py-20 w-full">
+    <div class="flex items-end justify-between w-full flex-wrap gap-6">
+      <div class="flex flex-col gap-4 items-start max-w-[530px]">
+        <div class="flex gap-2.5 items-center">
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p class="font-medium text-ink text-sm leading-none">Dienstleistungen</p>
+        </div>
+        <h2 class="font-display text-ink text-[40px] tracking-[-1.6px]">Alle Services aus einer Hand</h2>
+      </div>
+      <Button href="/leistungen">zu Dienstleistungen</Button>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 w-full">
+      {services.map((s) => (
+        <a href={s.href} class="relative border border-[#a9b9d6] flex flex-col h-[225px] items-end justify-between p-5 overflow-hidden group">
+          <img src={s.image} alt={s.title} class="absolute inset-0 w-full h-full object-cover -z-20" />
+          <div class="absolute inset-0 bg-black/40 -z-10"></div>
+          <p class="font-normal text-[28px] text-left text-white leading-[1.36] w-full">{s.title}</p>
+        </a>
+      ))}
+      <a href="/leistungen" class="bg-accent border border-accent flex flex-col h-[225px] items-end justify-between p-5">
+        <p class="font-normal text-[28px] text-left text-white leading-[1.36] w-full">Mehr erfahren</p>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section class="bg-skyblue flex flex-col md:flex-row gap-[100px] items-center px-[60px] py-10 w-full">
+    <div class="flex flex-1 flex-col gap-5 items-start justify-center">
+      <h2 class="font-medium text-ink text-[40px] tracking-[-1.6px]">Verschiedenste Projekte, gleiche Qualität.</h2>
+      <div class="flex flex-col gap-1.5 items-start text-ink text-sm font-medium">
+        <p>Einfamilienhäuser · Doppelhäuser · Reihenhäuser</p>
+        <p>Mehrfamilienhäuser · Gewerbehallen · Garagen</p>
+        <p>Bürogebäude</p>
+      </div>
+      <Button href="/referenzen">Referenzen ansehen</Button>
+    </div>
+    <div class="relative w-[522px] h-[472px] hidden md:block shrink-0">
+      <div class="absolute left-0 top-0 w-[522px] h-[372px] rounded-[20px] overflow-hidden">
+        <img src="/images/project-1.jpg" alt="Referenzprojekt 1" class="w-full h-full object-cover" />
+      </div>
+      <div class="absolute left-[50px] top-[50px] w-[522px] h-[372px] rounded-[20px] overflow-hidden">
+        <img src="/images/project-2.jpg" alt="Referenzprojekt 2" class="w-full h-full object-cover" />
+      </div>
+      <div class="absolute left-[100px] top-[100px] w-[522px] h-[372px] rounded-[20px] overflow-hidden">
+        <img src="/images/project-3.jpg" alt="Referenzprojekt 3" class="w-full h-full object-cover" />
+      </div>
+      <div class="absolute left-[325px] top-[216px] bg-[#f1faf4] border border-[#136627] flex gap-1.5 items-center px-3.5 py-2 rounded-[28px]">
+        <span class="bg-[#136627] size-1.5 shrink-0"></span>
+        <p class="font-medium text-ink text-sm">Fertiggestellt 12/2024</p>
+      </div>
+    </div>
+  </section>
+
+  <ContactCTA />
+</Layout>

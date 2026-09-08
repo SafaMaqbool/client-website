@@ -1,0 +1,41 @@
+---
+import { navItems } from "../data/site";
+
+const currentPath = Astro.url.pathname;
+const isActiveLink = (href: string) => {
+  if (href === "/") return currentPath === "/";
+  return currentPath === href || currentPath.startsWith(`${href}/`);
+};
+---
+<header class="bg-white flex flex-col h-20 justify-center overflow-hidden px-10 rounded-[20px] shadow-[0px_6px_24px_0px_rgba(0,0,0,0.08)] w-full max-w-[1240px] mx-auto">
+  <div class="flex items-center justify-between w-full gap-4">
+    <a href="/" class="bg-ink h-[38px] w-[127px] shrink-0 rounded-sm" aria-label="Zur Startseite" title="Zur Startseite"></a>
+
+    <nav aria-label="Hauptnavigation" class="flex items-center justify-center flex-1">
+      <div class="flex gap-8 items-center px-10">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={[
+              "flex items-center gap-1.5 shrink-0 text-[15.1px] leading-6 transition-colors",
+              isActiveLink(item.href)
+                ? "font-semibold text-ink underline underline-offset-4"
+                : "font-normal text-ink hover:text-accent",
+            ]}
+          >
+            {item.label}
+            {item.dropdown && (
+              <svg width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M1 1L5.5 5.5L10 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            )}
+          </a>
+        ))}
+      </div>
+    </nav>
+
+    <a href="/kontakt" class="bg-sand flex items-center justify-center px-[18px] py-2.5 rounded-lg shrink-0 hover:opacity-95 transition-opacity">
+      <span class="font-semibold text-ink text-xs leading-4">Kontaktieren Sie uns</span>
+    </a>
+  </div>
+</header>

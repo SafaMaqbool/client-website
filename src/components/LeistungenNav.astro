@@ -1,0 +1,33 @@
+---
+const services = [
+  { label: "Generalunternehmer", href: "/leistungen/generalunternehmer" },
+  { label: "Planung / Architektur", href: "/leistungen/planung-architektur" },
+  { label: "Rohbauarbeiten", href: "/leistungen/rohbauarbeiten" },
+  { label: "Tiefbauarbeiten", href: "/leistungen/tiefbauarbeiten" },
+  { label: "Heizung & Sanitärarbeiten", href: "/leistungen/heizung-sanitaer" },
+  { label: "Stahlhallenbau", href: "/leistungen/stahlhallenbau" },
+  { label: "Photovoltaikanlagen", href: "/leistungen/photovoltaikanlagen" },
+];
+const currentPath = Astro.url.pathname;
+---
+<section class="bg-white flex flex-col gap-4 items-start px-[60px] pt-10 w-full">
+  <div class="flex gap-2.5 items-center">
+    <span class="bg-accent size-1.5 shrink-0"></span>
+    <p class="font-medium text-ink text-sm leading-none">Leistungen</p>
+  </div>
+  <nav class="flex items-center gap-8 border-b border-sand w-full overflow-x-auto">
+    {services.map((s) => (
+      <a
+        href={s.href}
+        class:list={[
+          "text-[15px] leading-6 whitespace-nowrap pb-4 border-b-2",
+          currentPath === s.href
+            ? "font-semibold text-ink border-accent"
+            : "font-normal text-muted border-transparent hover:text-ink",
+        ]}
+      >
+        {s.label}
+      </a>
+    ))}
+  </nav>
+</section>

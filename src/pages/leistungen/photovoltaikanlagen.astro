@@ -1,0 +1,56 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LeistungenNav from "../../components/LeistungenNav.astro";
+import ContactCTA from "../../components/ContactCTA.astro";
+import NumberedList from "../../components/NumberedList.astro";
+import ListItem from "../../components/ListItem.astro";
+---
+<Layout title="Photovoltaikanlagen | Bauunternehmen Goch, NRW" description="Nachhaltige Stromerzeugung, maßgeschneidert.">
+  <LeistungenNav />
+
+  <section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
+    <div class="flex flex-1 flex-col gap-6 items-start">
+      <p class="font-medium text-accent text-sm uppercase tracking-wide">Photovoltaikanlagen</p>
+      <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">Nachhaltige Stromerzeugung, maßgeschneidert.</h1>
+      <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">
+        Wir bieten maßgeschneiderte Lösungen zur nachhaltigen Stromerzeugung für private, gewerbliche und landwirtschaftliche Anwendungen. Von der ersten Beratung bis zur Inbetriebnahme erhalten Sie bei uns alle Leistungen aus einer Hand.
+      </p>
+    </div>
+    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px] bg-sand"></div>
+  </section>
+
+  <section class="bg-white flex flex-col gap-8 items-start px-[60px] pb-12 w-full">
+    <h2 class="font-display text-ink text-[32px] tracking-[-1px]">Unser Leistungsspektrum</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 w-full">
+      <NumberedList>
+        <ListItem number={1}>Individuelle Beratung und Planung von Photovoltaikanlagen</ListItem>
+        <ListItem number={2}>Wirtschaftlichkeitsberechnung und Ertragsprognosen</ListItem>
+        <ListItem number={3}>Lieferung und Montage von Solarmodulen auf Dach- und Freiflächen</ListItem>
+        <ListItem number={4}>Installation von Wechselrichtern und Energiemanagementsystemen</ListItem>
+        <ListItem number={5}>Integration von Stromspeichern zur Eigenverbrauchsoptimierung</ListItem>
+      </NumberedList>
+      <NumberedList>
+        <ListItem number={6}>Kombination mit Wärmepumpen und Ladeinfrastruktur (E-Mobilität)</ListItem>
+        <ListItem number={7}>Netzanschluss und Abstimmung mit Energieversorgern</ListItem>
+        <ListItem number={8}>Anmeldung und Inbetriebnahme der Anlage</ListItem>
+        <ListItem number={9}>Wartung, Monitoring und Serviceleistungen</ListItem>
+      </NumberedList>
+    </div>
+  </section>
+
+  <section class="bg-sand/40 flex flex-col md:flex-row items-center justify-between gap-8 mx-[60px] mb-16 p-8 rounded-2xl">
+    <p class="font-normal text-[#171b1f] text-base leading-[1.5] max-w-[600px]">
+      Hochwertige Komponenten, moderne Technik und fachgerechte Installation — jede Anlage individuell auf die jeweiligen Gegebenheiten und Anforderungen abgestimmt.
+    </p>
+    <a
+      href="https://www.7yrds-energy.de/"
+      target="_blank"
+      rel="noreferrer noopener"
+      class="font-semibold text-accent text-base whitespace-nowrap underline underline-offset-4"
+    >
+      Für umfassende Photovoltaik- und Energiemanagementlösungen besuchen Sie unsere Tochtergesellschaft 7YRDS Energy GmbH →
+    </a>
+  </section>
+
+  <ContactCTA />
+</Layout>

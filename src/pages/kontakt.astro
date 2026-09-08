@@ -1,0 +1,77 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { site } from "../data/site";
+---
+<Layout title="Kontakt | Bauunternehmen Goch, NRW" description="Kontaktieren Sie uns für Ihr nächstes Bauprojekt.">
+  <section class="bg-white flex flex-col gap-4 items-start px-[60px] pt-16 pb-10 w-full">
+    <h1 class="font-display text-ink text-[44px] tracking-[-1.6px]">Kontakt</h1>
+  </section>
+
+  <section class="bg-white flex flex-col md:flex-row gap-16 items-start px-[60px] pb-20 w-full">
+    <div class="flex flex-1 flex-col gap-8 max-w-[420px]">
+      <h2 class="font-semibold text-ink text-2xl">Kontaktinformationen</h2>
+      <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-1">
+          <p class="text-muted text-sm uppercase tracking-wide">Adresse</p>
+          <p class="text-ink text-lg font-medium">{site.address}</p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-muted text-sm uppercase tracking-wide">Telefonnummer</p>
+          <a href={site.phoneHref} class="text-ink text-lg font-medium hover:text-accent">{site.phone}</a>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-muted text-sm uppercase tracking-wide">E-Mail</p>
+          <a href={site.emailHref} class="text-ink text-lg font-medium hover:text-accent">{site.email}</a>
+        </div>
+        <div class="flex flex-col gap-1">
+          <p class="text-muted text-sm uppercase tracking-wide">Öffnungszeiten</p>
+          <p class="text-ink text-lg font-medium">{site.openingHours}</p>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 pt-6 border-t border-sand">
+        <h3 class="font-semibold text-ink text-lg">Rechtliche Informationen</h3>
+        <a href="/impressum" class="text-ink text-base underline underline-offset-4 hover:text-accent">Impressum</a>
+        <a href="/datenschutz" class="text-ink text-base underline underline-offset-4 hover:text-accent">Datenschutz</a>
+      </div>
+    </div>
+
+    <form class="flex flex-1 flex-col gap-5 bg-sand/30 rounded-2xl p-8 w-full" action="mailto:info@bauunternehmen-goch.de" method="post" enctype="text/plain">
+      <h2 class="font-semibold text-ink text-2xl">Anfrage senden</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div class="flex flex-col gap-2">
+          <label for="name" class="text-ink text-sm font-medium">Ihr Name</label>
+          <input type="text" id="name" name="name" required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="phone" class="text-ink text-sm font-medium">Telefonnummer</label>
+          <input type="tel" id="phone" name="phone" placeholder="+49..." required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="email" class="text-ink text-sm font-medium">E-Mail</label>
+          <input type="email" id="email" name="email" required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50" />
+        </div>
+        <div class="flex flex-col gap-2">
+          <label for="topic" class="text-ink text-sm font-medium">Thema</label>
+          <select id="topic" name="topic" required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50">
+            <option value="">Wählen Sie...</option>
+            <option>Generalunternehmerleistungen</option>
+            <option>Planung / Architektur</option>
+            <option>Rohbauarbeiten</option>
+            <option>Tiefbauarbeiten</option>
+            <option>Heizung- und Sanitärarbeiten</option>
+            <option>Stahlhallenbau</option>
+            <option>Photovoltaikanlagen</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="message" class="text-ink text-sm font-medium">Ihre Nachricht</label>
+        <textarea id="message" name="message" rows="4" placeholder="Beschreiben Sie Ihr konkretes Anliegen..." required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink resize-none focus:outline-none focus:ring-2 focus:ring-accent/50"></textarea>
+      </div>
+      <button type="submit" class="bg-accent text-white font-medium px-6 py-3 rounded-lg self-start hover:opacity-95 transition-opacity">Anfrage senden</button>
+      <p class="text-muted text-sm">Wir melden uns innerhalb eines Tages.</p>
+    </form>
+  </section>
+</Layout>

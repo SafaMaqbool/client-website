@@ -1,0 +1,51 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LeistungenNav from "../../components/LeistungenNav.astro";
+import ContactCTA from "../../components/ContactCTA.astro";
+import Button from "../../components/Button.astro";
+---
+<Layout title="Generalunternehmerleistungen | Bauunternehmen Goch, NRW" description="Alle Bauleistungen aus einer Hand – Planung, Koordination und schlüsselfertige Übergabe.">
+  <LeistungenNav />
+
+  <section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
+    <div class="flex flex-1 flex-col gap-6 items-start">
+      <p class="font-medium text-accent text-sm uppercase tracking-wide">Generalunternehmerleistungen</p>
+      <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">Alle Bauleistungen aus einer Hand.</h1>
+      <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">
+        Wir bieten professionelle Generalunternehmerleistungen für Wohn-, Gewerbe- und Industriebauten. Von der Planung über die Koordination sämtlicher Gewerke bis hin zur schlüsselfertigen Übergabe. Termintreue, Qualität und wirtschaftliche Umsetzung stehen dabei im Mittelpunkt unserer Arbeit.
+      </p>
+    </div>
+    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px] bg-sand"></div>
+  </section>
+
+  <section class="bg-white flex flex-col gap-8 items-start px-[60px] pb-20 w-full">
+    <h2 class="font-display text-ink text-[32px] tracking-[-1px]">Leistungsübersicht</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+      <div class="bg-sand/40 rounded-2xl p-8 flex flex-col gap-3">
+        <span class="text-accent font-semibold text-sm">01</span>
+        <h3 class="font-semibold text-ink text-xl">Planung</h3>
+        <p class="text-[#171b1f] text-base leading-[1.4]">Individuelle Konzeptentwicklung und Kostenplanung.</p>
+      </div>
+      <div class="bg-sand/40 rounded-2xl p-8 flex flex-col gap-3">
+        <span class="text-accent font-semibold text-sm">02</span>
+        <h3 class="font-semibold text-ink text-xl">Koordination</h3>
+        <p class="text-[#171b1f] text-base leading-[1.4]">Steuerung aller Gewerke, Nachunternehmer und Lieferanten.</p>
+      </div>
+      <div class="bg-sand/40 rounded-2xl p-8 flex flex-col gap-3">
+        <span class="text-accent font-semibold text-sm">03</span>
+        <h3 class="font-semibold text-ink text-xl">Ausführung</h3>
+        <p class="text-[#171b1f] text-base leading-[1.4]">Wohn-, Gewerbe- und Industriebau.</p>
+      </div>
+      <div class="bg-sand/40 rounded-2xl p-8 flex flex-col gap-3">
+        <span class="text-accent font-semibold text-sm">04</span>
+        <h3 class="font-semibold text-ink text-xl">Schlüsselfertige Übergabe</h3>
+        <p class="text-[#171b1f] text-base leading-[1.4]">Termingerecht, im Budget, vollständig.</p>
+      </div>
+    </div>
+    <p class="font-medium text-ink text-lg italic border-l-4 border-accent pl-4">
+      Wir bauen Zukunft. Termintreue, Qualität und wirtschaftliche Umsetzung stehen dabei im Mittelpunkt unserer Arbeit.
+    </p>
+  </section>
+
+  <ContactCTA />
+</Layout>
