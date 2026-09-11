@@ -1,0 +1,37 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = "" } = Astro.props;
+---
+
+<div class={`grid grid-rows-4 pointer-events-none ${className}`}>
+  <div class="grid grid-cols-5">
+    <div class="border-b border-r border-white/40"></div>
+    <div class="border-b border-r border-white/40"></div>
+    <div class="border-b border-r border-white/40"></div>
+    <div class="border-b border-r border-white/40"></div>
+    <div class="border-b border-r border-white"></div>
+  </div>
+  <div class="grid grid-cols-5">
+    <div class="border-b border-r border-white/40"></div>
+    <div class="border-b border-r border-white/50"></div>
+    <div class="border-b border-r border-white/60"></div>
+    <div class="border-b border-r border-white/80"></div>
+    <div class="border-b border-r border-white"></div>
+  </div>
+  <div class="grid grid-cols-5">
+    <div class="border-b border-r border-white/40"></div>
+    <div class="border-b border-r border-white/60"></div>
+    <div class="border-b border-r border-white/60"></div>
+    <div class="border-b border-r border-white/80"></div>
+    <div class="border-b border-r border-white"></div>
+  </div>
+  <div class="grid grid-cols-5">
+    <div class="border-b border-r border-white/80"></div>
+    <div class="border-b border-r border-white/80"></div>
+    <div class="border-b border-r border-white/80"></div>
+    <div class="border-b border-r border-white/80"></div>
+    <div class="border-b border-r border-white"></div>
+  </div>
+</div>
