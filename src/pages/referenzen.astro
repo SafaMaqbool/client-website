@@ -22,7 +22,7 @@ const residential: Project[] = [
   { title: "Errichtung von 10 Reihenhäusern", location: "Birkenallee 10a–j, Kalkar", gfa: "1,724 m²", date: "06/2023", status: "Fertiggestellt", image: nextImage() },
   { title: "Errichtung von 2 Mehrfamilienhäusern mit 7 Wohneinheiten und 1 Doppelhaus", location: "Birkenallee 12a–c, Kalkar", gfa: "1,385 m²", date: "09/2023", status: "Fertiggestellt", image: nextImage() },
   { title: "Errichtung eines Mehrfamilienhauses mit 11 Wohneinheiten", location: "Postweg 14c, Kalkar", gfa: "1,350 m²", date: "08/2024", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung von 5 Reihenhäusern mit Garagen", location: "Alpener Straße 304, Rheinberg", gfa: "932 m²", date: "11/2024", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung von 5 Reihenhäusern mit Garagen", location: "Alpener Straße 304, Rheinberg", gfa: "932 m²", date: "11/2024", status: "Fertiggestellt", image: "images/ref-project2024.png" },
   { title: "Errichtung von 12 Doppelhaushälften mit Garagen", location: "Alte Heerstraße 37–59, Weeze", gfa: "2,868 m²", date: "12/2024", status: "Fertiggestellt", image: nextImage() },
   { title: "Errichtung eines Mehrfamilienhauses mit 21 Wohneinheiten", location: "Fichtenweg 2a, Kalkar", gfa: "2,184 m²", date: "12/2024", status: "Fertiggestellt", image: nextImage() },
   { title: "Neubau von 8 Reihenhäusern und 1 Mehrfamilienhaus", location: "Kevelaererstraße 90–100, Weeze", gfa: "2,407 m²", date: "05/2025", status: "Fertiggestellt", image: nextImage() },
@@ -34,10 +34,10 @@ const residential: Project[] = [
 ];
 
 const commercial: Project[] = [
-  { title: "Errichtung von 2 Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2,497 m²", date: "10/2025", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung von 2 Gewerbehallen und 7 Gebäuden mit 136 Garagen", location: "Derner Straße 11, Lünen", gfa: "4,480 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
-  { title: "Neubau einer Gewerbehalle und 7 Gebäuden für 148 Garagen", location: "Empeler Straße 91a, Rees", gfa: "4,633 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
-  { title: "Umbau Bürogebäude, Lagerhalle und Waschstraße", location: "Borsigstraße 2, Goch", gfa: "3,540 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
+  { title: "Errichtung von 2 Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2,497 m²", date: "10/2025", status: "Fertiggestellt", image: "images/commercialhalls1.png" },
+  { title: "Errichtung von 2 Gewerbehallen und 7 Gebäuden mit 136 Garagen", location: "Derner Straße 11, Lünen", gfa: "4,480 m²", date: "Im Bau", status: "In Arbeit", image: "images/underconstruction1.png" },
+  { title: "Neubau einer Gewerbehalle und 7 Gebäuden für 148 Garagen", location: "Empeler Straße 91a, Rees", gfa: "4,633 m²", date: "Im Bau", status: "In Arbeit", image: "images/ref-project-8.jpg" },
+  { title: "Umbau Bürogebäude, Lagerhalle und Waschstraße", location: "Borsigstraße 2, Goch", gfa: "3,540 m²", date: "Im Bau", status: "In Arbeit", image: "images/ref-project-9.jpg" },
 ];
 
 function groupByPeriod(items: Project[]): [string, Project[]][] {
