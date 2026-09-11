@@ -10,7 +10,7 @@ export const site = {
   emailHref: "mailto:info@bauunternehmen-goch.de",
   address: "Hauptstraße 24, 47574 Goch, NRW",
   legalName: "Bauunternehmen Goch GmbH",
-  registration: "Amtsgericht Kleve, HRB 12345",
+  registration: "Zertifiziert seit 26.03.2026",
   vatId: "DE123456789",
   openingHours: "Mo.–Fr. 08:00–17:00",
 } as const;
