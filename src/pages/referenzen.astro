@@ -18,26 +18,26 @@ let imageCursor = 0;
 const nextImage = () => images[imageCursor++ % images.length];
 
 const residential: Project[] = [
-  { title: "Errichtung von 3 Mehrfamilienhäusern mit je 23 Wohneinheiten", location: "Moerser Straße 403–407, Kamp-Lintfort", gfa: "6.001 m²", date: "01/2022", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung von 10 Reihenhäusern", location: "Birkenallee 10a–j, Kalkar", gfa: "1.724 m²", date: "06/2023", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung von 2 Mehrfamilienhäusern mit 7 Wohneinheiten und 1 Doppelhaus", location: "Birkenallee 12a–c, Kalkar", gfa: "1.385 m²", date: "09/2023", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung eines Mehrfamilienhauses mit 11 Wohneinheiten", location: "Postweg 14c, Kalkar", gfa: "1.350 m²", date: "08/2024", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung von 3 Mehrfamilienhäusern mit je 23 Wohneinheiten", location: "Moerser Straße 403–407, Kamp-Lintfort", gfa: "6,001 m²", date: "01/2022", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung von 10 Reihenhäusern", location: "Birkenallee 10a–j, Kalkar", gfa: "1,724 m²", date: "06/2023", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung von 2 Mehrfamilienhäusern mit 7 Wohneinheiten und 1 Doppelhaus", location: "Birkenallee 12a–c, Kalkar", gfa: "1,385 m²", date: "09/2023", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung eines Mehrfamilienhauses mit 11 Wohneinheiten", location: "Postweg 14c, Kalkar", gfa: "1,350 m²", date: "08/2024", status: "Fertiggestellt", image: nextImage() },
   { title: "Errichtung von 5 Reihenhäusern mit Garagen", location: "Alpener Straße 304, Rheinberg", gfa: "932 m²", date: "11/2024", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung von 12 Doppelhaushälften mit Garagen", location: "Alte Heerstraße 37–59, Weeze", gfa: "2.868 m²", date: "12/2024", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung eines Mehrfamilienhauses mit 21 Wohneinheiten", location: "Fichtenweg 2a, Kalkar", gfa: "2.184 m²", date: "12/2024", status: "Fertiggestellt", image: nextImage() },
-  { title: "Neubau von 8 Reihenhäusern und 1 Mehrfamilienhaus", location: "Kevelaererstraße 90–100, Weeze", gfa: "2.407 m²", date: "05/2025", status: "Fertiggestellt", image: nextImage() },
-  { title: "Neubau von 3 Doppelhäusern mit Garagen", location: "Parkstraße, Sonsbeck", gfa: "1.188 m²", date: "05/2025", status: "Fertiggestellt", image: nextImage() },
-  { title: "Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2.497 m²", date: "10/2025", status: "Fertiggestellt", image: nextImage() },
-  { title: "Neubau eines Mehrfamilienhauses mit 31 Wohneinheiten und Stellplatzanlage", location: "Ernst-Holla-Straße 9a–d, Moers", gfa: "3.453 m²", date: "02/2026", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung von 12 Doppelhaushälften mit Garagen", location: "Alte Heerstraße 37–59, Weeze", gfa: "2,868 m²", date: "12/2024", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung eines Mehrfamilienhauses mit 21 Wohneinheiten", location: "Fichtenweg 2a, Kalkar", gfa: "2,184 m²", date: "12/2024", status: "Fertiggestellt", image: nextImage() },
+  { title: "Neubau von 8 Reihenhäusern und 1 Mehrfamilienhaus", location: "Kevelaererstraße 90–100, Weeze", gfa: "2,407 m²", date: "05/2025", status: "Fertiggestellt", image: nextImage() },
+  { title: "Neubau von 3 Doppelhäusern mit Garagen", location: "Parkstraße, Sonsbeck", gfa: "1,188 m²", date: "05/2025", status: "Fertiggestellt", image: nextImage() },
+  { title: "Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2,497 m²", date: "10/2025", status: "Fertiggestellt", image: nextImage() },
+  { title: "Neubau eines Mehrfamilienhauses mit 31 Wohneinheiten und Stellplatzanlage", location: "Ernst-Holla-Straße 9a–d, Moers", gfa: "3,453 m²", date: "02/2026", status: "Fertiggestellt", image: nextImage() },
   { title: "Neubau Doppelhaus mit Garage", location: "Nierspaß 7+7a, Goch", gfa: "468 m²", date: "02/2026", status: "Fertiggestellt", image: nextImage() },
-  { title: "Neubau von 6 Doppelhaushälften und 5 Garagen", location: "Paulstraße 8a+8b / Ebertstraße 84a–d, Kamp-Lintfort", gfa: "1.146 m²", date: "06/2026", status: "Fertiggestellt", image: nextImage() },
+  { title: "Neubau von 6 Doppelhaushälften und 5 Garagen", location: "Paulstraße 8a+8b / Ebertstraße 84a–d, Kamp-Lintfort", gfa: "1,146 m²", date: "06/2026", status: "Fertiggestellt", image: nextImage() },
 ];
 
 const commercial: Project[] = [
-  { title: "Errichtung von 2 Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2.497 m²", date: "10/2025", status: "Fertiggestellt", image: nextImage() },
-  { title: "Errichtung von 2 Gewerbehallen und 7 Gebäuden mit 136 Garagen", location: "Derner Straße 11, Lünen", gfa: "4.480 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
-  { title: "Neubau einer Gewerbehalle und 7 Gebäuden für 148 Garagen", location: "Empeler Straße 91a, Rees", gfa: "4.633 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
-  { title: "Umbau Bürogebäude, Lagerhalle und Waschstraße", location: "Borsigstraße 2, Goch", gfa: "3.540 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
+  { title: "Errichtung von 2 Gewerbehallen und 66 Garagen in 4 Garagengebäuden", location: "An der Molkerei 13, Bedburg-Hau", gfa: "2,497 m²", date: "10/2025", status: "Fertiggestellt", image: nextImage() },
+  { title: "Errichtung von 2 Gewerbehallen und 7 Gebäuden mit 136 Garagen", location: "Derner Straße 11, Lünen", gfa: "4,480 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
+  { title: "Neubau einer Gewerbehalle und 7 Gebäuden für 148 Garagen", location: "Empeler Straße 91a, Rees", gfa: "4,633 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
+  { title: "Umbau Bürogebäude, Lagerhalle und Waschstraße", location: "Borsigstraße 2, Goch", gfa: "3,540 m²", date: "Im Bau", status: "In Arbeit", image: nextImage() },
 ];
 
 function groupByPeriod(items: Project[]): [string, Project[]][] {
