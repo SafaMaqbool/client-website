@@ -58,59 +58,65 @@ const services = [
 
 <Layout title="Wir bauen Zukunft! | Bauunternehmen Goch, NRW">
   <!-- Hero -->
- <section
-  class="relative flex flex-col items-center pt-5 pb-10 w-full overflow-hidden"
->
-  <img
-    src="/images/hero-bg.jpg"
-    alt="Baustelle mit Kran"
-    class="absolute inset-0 w-full object-cover z-0"
-  />
-  <div class="absolute inset-0 bg-black/35 z-10"></div>
-
-  <div
-    class="flex flex-col items-start justify-center z-20 relative w-full max-w-310 pt-32 pb-16"
+  <section
+    class="relative flex flex-col items-center pt-5 pb-10 w-full overflow-hidden"
   >
-    <div class="flex flex-col gap-8 items-start max-w-164 px-15">
-      <div class="flex flex-col gap-4 items-start w-full">
-        <div class="flex gap-2.5 items-center">
-          <span class="bg-accent size-1.5 shrink-0"></span>
-          <p class="font-medium text-sm text-white leading-none whitespace-nowrap">
-            Goch, NRW · Since 2009
-          </p>
-        </div>
-        <div class="flex flex-col gap-1 font-semibold leading-none text-[65px] tracking-[-2.6px] w-full">
-          <h1 class="text-white">Wir bauen</h1>
-          <h1 class="text-accent">Zukunft!</h1>
-        </div>
-        <p class="font-normal text-white text-xl leading-[1.2] tracking-[-0.8px] max-w-129.25">
-          Von der Planung bis zur schlüsselfertigen Übergabe. Wir decken das
-          gesamte Spektrum des Bauens ab. Ein Partner, eine Verantwortung, ein
-          Qualitätsanspruch.
-        </p>
-      </div>
-      <Button href="/kontakt" variant="dark">Kontaktieren Sie uns</Button>
-    </div>
-  </div>
+    <img
+      src="/images/hero-bg.jpg"
+      alt="Baustelle mit Kran"
+      class="absolute inset-0 w-full object-cover z-0"
+    />
+    <div class="absolute inset-0 bg-black/35 z-10"></div>
 
-  <div class="relative z-20 bg-skyblue flex w-full max-w-7xl p-4">
-    {
-      audiences.map((a, i) => (
-        <div
-          class:list={[
-            "bg-skyblue flex-1 flex items-center gap-3 p-5",
-            i < audiences.length - 1 && "border-r border-skyblueLine",
-          ]}
-        >
-          <img src={a.icon} alt="" class="w-20 h-20 shrink-0" />
-          <p class="font-bold text-base text-black leading-normal">
-            {a.label}
+    <div
+      class="flex flex-col items-start justify-center z-20 relative w-full max-w-310 pt-32 pb-16"
+    >
+      <div class="flex flex-col gap-8 items-start max-w-164 px-15">
+        <div class="flex flex-col gap-4 items-start w-full">
+          <div class="flex gap-2.5 items-center">
+            <span class="bg-accent size-1.5 shrink-0"></span>
+            <p
+              class="font-medium text-sm text-white leading-none whitespace-nowrap"
+            >
+              Goch, NRW · Since 2009
+            </p>
+          </div>
+          <div
+            class="flex flex-col gap-1 font-semibold leading-none text-[65px] tracking-[-2.6px] w-full"
+          >
+            <h1 class="text-white">Wir bauen</h1>
+            <h1 class="text-accent">Zukunft!</h1>
+          </div>
+          <p
+            class="font-normal text-white text-xl leading-[1.2] tracking-[-0.8px] max-w-129.25"
+          >
+            Von der Planung bis zur schlüsselfertigen Übergabe. Wir decken das
+            gesamte Spektrum des Bauens ab. Ein Partner, eine Verantwortung, ein
+            Qualitätsanspruch.
           </p>
         </div>
-      ))
-    }
-  </div>
-</section>
+        <Button href="/kontakt" variant="dark">Kontaktieren Sie uns</Button>
+      </div>
+    </div>
+
+    <div class="relative z-20 bg-skyblue flex w-full max-w-7xl p-4">
+      {
+        audiences.map((a, i) => (
+          <div
+            class:list={[
+              "bg-skyblue flex-1 flex items-center gap-3 p-5",
+              i < audiences.length - 1 && "border-r border-skyblueLine",
+            ]}
+          >
+            <img src={a.icon} alt="" class="w-20 h-20 shrink-0" />
+            <p class="font-bold text-base text-black leading-normal">
+              {a.label}
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
 
   <!-- Über uns intro -->
   <section
@@ -264,12 +270,12 @@ const services = [
       </div>
       <Button href="/referenzen">Referenzen ansehen</Button>
     </div>
-    <div class="relative w-130.5 h-118 hidden md:block shrink-0">
+    <div class="relative w-155.5 h-118 hidden md:block shrink-0">
       <div
-        class="absolute left-0 top-0 w-130.5 h-93 rounded-[20px] overflow-hidden"
+        class="absolute left-25 top-0 w-130.5 h-93 rounded-[20px] overflow-hidden"
       >
         <img
-          src="/images/project-1.jpg"
+          src="/images/project-2.jpg"
           alt="Referenzprojekt 1"
           class="w-full h-full object-cover"
         />
@@ -278,22 +284,22 @@ const services = [
         class="absolute left-12.5 top-12.5 w-130.5 h-93 rounded-[20px] overflow-hidden"
       >
         <img
-          src="/images/project-2.jpg"
+          src="/images/project-3.jpg"
           alt="Referenzprojekt 2"
           class="w-full h-full object-cover"
         />
       </div>
       <div
-        class="absolute left-25 top-25 w-130.5 h-93 rounded-[20px] overflow-hidden"
+        class="absolute left-0 top-25 w-130.5 h-93 rounded-[20px] overflow-hidden"
       >
         <img
-          src="/images/project-3.jpg"
+          src="/images/project-1.jpg"
           alt="Referenzprojekt 3"
           class="w-full h-full object-cover"
         />
       </div>
       <div
-        class="absolute left-81.25 top-54 bg-[#f1faf4] border border-[#136627] flex gap-1.5 items-center px-3.5 py-2 rounded-[28px]"
+        class="absolute left-81.25 top-29 bg-[#f1faf4] border border-[#136627] flex gap-1.5 items-center px-3.5 py-2 rounded-[28px]"
       >
         <span class="bg-[#136627] size-1.5 shrink-0"></span>
         <p class="font-medium text-ink text-sm">Fertiggestellt 12/2024</p>
