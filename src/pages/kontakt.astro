@@ -1,77 +1,162 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import CornerGrid from "../components/CornerGrid.astro";
 import { site } from "../data/site";
+
+const [addressLine1, addressLine2] = site.address.split(", ");
+
+const placeholderLinks = [
+  ["Text", "Text", "Text", "Text"],
+  ["Text", "Text", "Text", "Text"],
+  ["Text", "Text", "Text"],
+];
 ---
 <Layout title="Kontakt | Bauunternehmen Goch, NRW" description="Kontaktieren Sie uns für Ihr nächstes Bauprojekt.">
-  <section class="bg-white flex flex-col gap-4 items-start px-[60px] pt-16 pb-10 w-full">
-    <h1 class="font-display text-ink text-[44px] tracking-[-1.6px]">Kontakt</h1>
+  <!-- Hero -->
+  <section class="relative bg-ink flex flex-col items-center pt-5 pb-10 w-full overflow-hidden">
+    <CornerGrid class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-50 rotate-180 z-0" />
+
+    <div class="h-20 w-full shrink-0"></div>
+
+    <div class="relative z-10 flex flex-col items-start w-full max-w-310 pt-16 pb-6 px-15">
+      <h1 class="font-semibold text-white text-[56px] md:text-[80px] leading-none tracking-[-3.2px]">Kontakt</h1>
+    </div>
   </section>
 
-  <section class="bg-white flex flex-col md:flex-row gap-16 items-start px-[60px] pb-20 w-full">
-    <div class="flex flex-1 flex-col gap-8 max-w-[420px]">
-      <h2 class="font-semibold text-ink text-2xl">Kontaktinformationen</h2>
-      <div class="flex flex-col gap-6">
-        <div class="flex flex-col gap-1">
-          <p class="text-muted text-sm uppercase tracking-wide">Adresse</p>
-          <p class="text-ink text-lg font-medium">{site.address}</p>
+  <!-- Kontaktinformationen & Formular -->
+  <section class="bg-white flex flex-col lg:flex-row gap-15 items-stretch px-6 md:px-15 py-20 w-full">
+    <div class="flex flex-col justify-between gap-10 w-full lg:w-91.25 shrink-0">
+      <div class="flex flex-col gap-10 items-start w-full">
+        <div class="flex gap-2.5 items-center">
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p class="font-medium text-ink text-sm leading-none">Kontaktinformationen</p>
         </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-muted text-sm uppercase tracking-wide">Telefonnummer</p>
-          <a href={site.phoneHref} class="text-ink text-lg font-medium hover:text-accent">{site.phone}</a>
-        </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-muted text-sm uppercase tracking-wide">E-Mail</p>
-          <a href={site.emailHref} class="text-ink text-lg font-medium hover:text-accent">{site.email}</a>
-        </div>
-        <div class="flex flex-col gap-1">
-          <p class="text-muted text-sm uppercase tracking-wide">Öffnungszeiten</p>
-          <p class="text-ink text-lg font-medium">{site.openingHours}</p>
+
+        <div class="flex flex-col gap-4.5 items-start w-full">
+          <div class="flex flex-col gap-3 items-start w-full">
+            <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">Adresse</p>
+            <div class="flex flex-col gap-1.5 items-start w-full">
+              <h2 class="font-semibold text-ink text-lg tracking-[-0.36px]">{addressLine1}</h2>
+              <h2 class="font-semibold text-ink text-lg tracking-[-0.36px]">{addressLine2}</h2>
+            </div>
+          </div>
+          <div class="flex flex-col gap-3 items-start w-full">
+            <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">Telefonnummer</p>
+            <a href={site.phoneHref} class="font-semibold text-ink text-lg tracking-[-0.36px] hover:text-accent">{site.phone}</a>
+          </div>
+          <div class="flex flex-col gap-3 items-start w-full">
+            <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">E-Mail</p>
+            <a href={site.emailHref} class="font-semibold text-ink text-lg tracking-[-0.36px] hover:text-accent">{site.email}</a>
+          </div>
         </div>
       </div>
 
-      <div class="flex flex-col gap-2 pt-6 border-t border-sand">
-        <h3 class="font-semibold text-ink text-lg">Rechtliche Informationen</h3>
-        <a href="/impressum" class="text-ink text-base underline underline-offset-4 hover:text-accent">Impressum</a>
-        <a href="/datenschutz" class="text-ink text-base underline underline-offset-4 hover:text-accent">Datenschutz</a>
+      <div class="bg-[#f3f7fd] flex flex-col gap-6 items-start justify-center px-8 md:px-10 py-8 rounded-2xl w-full">
+        <svg width="42" height="42" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" stroke="#1D1B24" stroke-width="1.3" />
+          <ellipse cx="12" cy="12" rx="4" ry="9" stroke="#1D1B24" stroke-width="1.3" />
+          <path d="M3 12h18M4.5 7.5h15M4.5 16.5h15" stroke="#1D1B24" stroke-width="1.3" />
+        </svg>
+        <div class="flex flex-col gap-5 items-start w-full text-lg text-ink">
+          <h2 class="font-semibold leading-none tracking-[-0.36px]">Rechtliche Informationen</h2>
+          <div class="flex flex-col gap-2 items-start w-full font-normal leading-[1.2] tracking-[-0.72px]">
+            <a href="/impressum" class="underline underline-offset-4 hover:text-accent">Impressum</a>
+            <a href="/datenschutz" class="underline underline-offset-4 hover:text-accent">Datenschutz</a>
+          </div>
+        </div>
       </div>
     </div>
 
-    <form class="flex flex-1 flex-col gap-5 bg-sand/30 rounded-2xl p-8 w-full" action="mailto:info@bauunternehmen-goch.de" method="post" enctype="text/plain">
-      <h2 class="font-semibold text-ink text-2xl">Anfrage senden</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div class="flex flex-col gap-2">
-          <label for="name" class="text-ink text-sm font-medium">Ihr Name</label>
-          <input type="text" id="name" name="name" required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50" />
+    <form
+      class="bg-[#f3f7fd] flex flex-1 flex-col gap-10.5 items-center justify-center px-6 md:px-10 pt-10 pb-6 rounded-2xl w-full"
+      action={`mailto:${site.email}`}
+      method="post"
+      enctype="text/plain"
+    >
+      <h2 class="font-display text-[#171b1f] text-[32px] tracking-[-1.28px] w-full">Anfrage senden</h2>
+
+      <div class="flex flex-col gap-6 items-start w-full">
+        <div class="flex flex-col sm:flex-row gap-7.5 items-start w-full">
+          <div class="flex flex-1 flex-col gap-2.5 items-start w-full">
+            <label for="name" class="font-medium text-[#171b1f] text-base tracking-[0.24px]">Ihr Name</label>
+            <input type="text" id="name" name="name" required class="bg-[#dae2ef] border border-[#eef4ff] rounded-xl p-3 text-ink w-full focus:outline-none focus:ring-2 focus:ring-accent/50" />
+          </div>
+          <div class="flex flex-1 flex-col gap-2.5 items-start w-full">
+            <label for="phone" class="font-medium text-[#171b1f] text-base tracking-[0.24px]">Telefonnummer</label>
+            <input type="tel" id="phone" name="phone" placeholder="+49..." required class="bg-[#dae2ef] border border-[#eef4ff] rounded-xl p-3 text-ink w-full placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-accent/50" />
+          </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <label for="phone" class="text-ink text-sm font-medium">Telefonnummer</label>
-          <input type="tel" id="phone" name="phone" placeholder="+49..." required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50" />
+
+        <div class="flex flex-col sm:flex-row gap-7.5 items-start w-full">
+          <div class="flex flex-1 flex-col gap-2.5 items-start w-full">
+            <label for="email" class="font-medium text-[#171b1f] text-base tracking-[0.24px]">E-Mail</label>
+            <input type="email" id="email" name="email" required class="bg-[#dae2ef] border border-[#eef4ff] rounded-xl p-3 text-ink w-full focus:outline-none focus:ring-2 focus:ring-accent/50" />
+          </div>
+          <div class="flex flex-1 flex-col gap-2.5 items-start w-full">
+            <label for="topic" class="font-medium text-[#171b1f] text-base tracking-[0.24px]">Thema</label>
+            <div class="relative w-full">
+              <select id="topic" name="topic" required class="appearance-none bg-[#dae2ef] border border-[#eef4ff] rounded-xl p-3 pr-10 text-ink w-full focus:outline-none focus:ring-2 focus:ring-accent/50">
+                <option value="">Wählen Sie...</option>
+                <option>Generalunternehmerleistungen</option>
+                <option>Planung / Architektur</option>
+                <option>Rohbauarbeiten</option>
+                <option>Tiefbauarbeiten</option>
+                <option>Heizung- und Sanitärarbeiten</option>
+                <option>Stahlhallenbau</option>
+                <option>Photovoltaikanlagen</option>
+                <option>Sonstiges</option>
+              </select>
+              <svg width="14" height="9" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg" class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" aria-hidden="true">
+                <path d="M1 1L5.5 5.5L10 1" stroke="#686767" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+          </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <label for="email" class="text-ink text-sm font-medium">E-Mail</label>
-          <input type="email" id="email" name="email" required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50" />
-        </div>
-        <div class="flex flex-col gap-2">
-          <label for="topic" class="text-ink text-sm font-medium">Thema</label>
-          <select id="topic" name="topic" required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink focus:outline-none focus:ring-2 focus:ring-accent/50">
-            <option value="">Wählen Sie...</option>
-            <option>Generalunternehmerleistungen</option>
-            <option>Planung / Architektur</option>
-            <option>Rohbauarbeiten</option>
-            <option>Tiefbauarbeiten</option>
-            <option>Heizung- und Sanitärarbeiten</option>
-            <option>Stahlhallenbau</option>
-            <option>Photovoltaikanlagen</option>
-            <option>Sonstiges</option>
-          </select>
+
+        <div class="flex flex-col gap-2.5 items-start w-full">
+          <label for="message" class="font-medium text-[#171b1f] text-base tracking-[0.24px]">Ihre Nachricht (optional)</label>
+          <textarea id="message" name="message" rows="4" placeholder="Beschreiben Sie Ihr konkretes Anliegen..." class="bg-[#dae2ef] border border-[#eef4ff] rounded-xl p-3 text-ink resize-none w-full h-28 focus:outline-none focus:ring-2 focus:ring-accent/50"></textarea>
         </div>
       </div>
-      <div class="flex flex-col gap-2">
-        <label for="message" class="text-ink text-sm font-medium">Ihre Nachricht</label>
-        <textarea id="message" name="message" rows="4" placeholder="Beschreiben Sie Ihr konkretes Anliegen..." required class="bg-white border border-sand rounded-lg px-4 py-3 text-ink resize-none focus:outline-none focus:ring-2 focus:ring-accent/50"></textarea>
+
+      <div class="flex flex-col gap-3 items-center">
+        <button type="submit" class="inline-flex items-center justify-center gap-2.5 bg-[#171b1f] text-white px-8 py-4 hover:opacity-95 transition-opacity">
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <span class="font-medium text-sm leading-none">Anfrage senden</span>
+        </button>
+        <p class="font-normal text-[#171b1f] text-base text-center leading-[1.5]">Wir melden uns innerhalb eines Tages</p>
       </div>
-      <button type="submit" class="bg-accent text-white font-medium px-6 py-3 rounded-lg self-start hover:opacity-95 transition-opacity">Anfrage senden</button>
-      <p class="text-muted text-sm">Wir melden uns innerhalb eines Tages.</p>
     </form>
+  </section>
+
+  <!-- Platzhalter-Bereich (Inhalte aus Figma noch nicht final) -->
+  <section class="bg-white border-y border-sand flex flex-col gap-8 items-center justify-center p-6 md:p-15 w-full">
+    <div class="flex flex-col gap-4 items-start w-full">
+      <div class="flex gap-2.5 items-center">
+        <span class="bg-accent size-1.5 shrink-0"></span>
+        <p class="font-medium text-ink text-sm leading-none">Tag</p>
+      </div>
+      <h2 class="font-display text-ink text-[40px] tracking-[-1.6px]">Headline</h2>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-5 md:gap-12.5 items-start w-full">
+      {placeholderLinks.map((column) => (
+        <div class="flex flex-col gap-3 items-start w-full sm:w-33.5">
+          {column.map((label) => (
+            <div class="bg-[#e4efff] flex gap-6 items-center justify-between px-3.5 py-2.5 rounded-2xl shrink-0 w-full">
+              <div class="flex gap-2 items-center">
+                <span class="font-normal text-ink text-sm tracking-[-0.56px]">{label}</span>
+                <a href="#" class="font-semibold text-accent text-sm tracking-[-0.28px] underline underline-offset-4">Link</a>
+              </div>
+              <span class="flex items-center justify-center rounded-full border border-ink/60 size-6 shrink-0">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M7 17L17 7M17 7H9M17 7V15" stroke="#1D1B24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
   </section>
 </Layout>
