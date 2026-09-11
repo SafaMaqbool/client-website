@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
 import ContactCTA from "../components/ContactCTA.astro";
- import CornerGrid from "../components/CornerGrid.astro";
+import CornerGrid from "../components/CornerGrid.astro";
 
 const audiences = [
   { label: "Private Auftraggeber", icon: "/icons/private.svg" },
@@ -68,8 +68,12 @@ const services = [
       class="absolute inset-0 w-full object-cover z-0"
     />
     <div class="absolute inset-0 bg-black/35 z-10"></div>
-    <CornerGrid class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-20 rotate-180 z-10" />
-    <CornerGrid class="absolute -bottom-1 -right-1 w-78.75 h-60.5 opacity-20 z-10" />
+    <CornerGrid
+      class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-20 rotate-180 z-10"
+    />
+    <CornerGrid
+      class="absolute -bottom-1 -right-1 w-78.75 h-60.5 opacity-20 z-10"
+    />
 
     <div
       class="flex flex-col items-start justify-center z-20 relative w-full max-w-310 pt-32 pb-16"
@@ -267,8 +271,20 @@ const services = [
       <div
         class="flex flex-col gap-1.5 items-start text-ink text-sm font-medium"
       >
-        <p>Einfamilienhäuser · Doppelhäuser · Reihenhäuser</p>
-        <p>Mehrfamilienhäuser · Gewerbehallen · Garagen</p>
+        <div class="flex items-center gap-2">
+          <p>Einfamilienhäuser</p>
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p>Doppelhäuser</p>
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p>Reihenhäuser</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <p>Mehrfamilienhäuser</p>
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p>Gewerbehallen</p>
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p>Garagen</p>
+        </div>
         <p>Bürogebäude</p>
       </div>
       <Button href="/referenzen">Referenzen ansehen</Button>
