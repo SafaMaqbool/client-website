@@ -10,6 +10,6 @@ const base = "inline-flex items-center justify-center gap-[10px] p-4 rounded-lg 
 const styles = variant === "primary" ? "bg-accent text-white" : "bg-ink text-white";
 ---
 <a href={href} class:list={[base, styles, className]}>
-  <span class:list={["size-[6px]", "shrink-0", variant === "primary" ? "bg-ink" : "bg-accent"]}></span>
+  <span class:list={["size-1.5", "shrink-0", variant === "primary" ? "bg-ink" : "bg-accent"]}></span>
   <span class="font-medium text-sm leading-none whitespace-nowrap"><slot /></span>
 </a>
