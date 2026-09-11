@@ -167,24 +167,58 @@ const services = [
   </section>
 
   <!-- Stats -->
-  <section
-    class="bg-white flex flex-col md:flex-row gap-7.5 items-start pb-20 pt-10 px-15 w-full"
-  >
-    {
-      stats.map((s) => (
-        <div class="bg-sand flex flex-1 flex-col gap-6 h-59.25 items-start px-10 py-8 rounded-2xl">
-          <div class="flex flex-col gap-2 items-start text-black w-full">
-            <h2 class="font-semibold leading-none text-[50px] tracking-[-1px] w-full">
-              {s.value}
-            </h2>
-            <p class="font-normal leading-[1.2] text-lg tracking-[-0.72px] w-full">
-              {s.label}
-            </p>
-          </div>
-        </div>
-      ))
-    }
-  </section>
+<!-- Stats -->
+<section
+  class="bg-white flex flex-col md:flex-row gap-7.5 items-start pb-20 pt-10 px-15 w-full"
+>
+  <div class="bg-sand relative overflow-hidden flex flex-1 flex-col gap-6 h-59.25 items-start px-10 py-8 rounded-2xl">
+    <div class="flex flex-col gap-2 items-start text-black w-full">
+      <h2 class="font-semibold leading-none text-[50px] tracking-[-1px] w-full">
+        80+
+      </h2>
+      <p class="font-normal leading-[1.2] text-lg tracking-[-0.72px] w-full">
+        Projekte fertiggestellt
+      </p>
+    </div>
+    <img
+      src="/icons/stat-project.svg"
+      alt=""
+      class="absolute bottom-0 -right-1 h-37.75 w-60.25 pointer-events-none"
+    />
+  </div>
+
+  <div class="bg-sand relative overflow-hidden flex flex-1 flex-col gap-6 h-59.25 items-start px-10 py-8 rounded-2xl">
+    <div class="flex flex-col gap-2 items-start text-black w-full">
+      <h2 class="font-semibold leading-none text-[50px] tracking-[-1px] w-full">
+        15+
+      </h2>
+      <p class="font-normal leading-[1.2] text-lg tracking-[0.9px] w-full">
+        Jahre Erfahrung
+      </p>
+    </div>
+    <img
+      src="/icons/stat-experience.svg"
+      alt=""
+      class="absolute left-10 top-30.75 h-28.25 w-50.25 pointer-events-none"
+    />
+  </div>
+
+  <div class="bg-sand relative overflow-hidden flex flex-1 flex-col gap-6 h-59.25 items-start px-10 py-8 rounded-2xl">
+    <div class="flex flex-col gap-2 items-start text-black w-full">
+      <h2 class="font-semibold leading-none text-[50px] tracking-[-1px] w-full">
+        25M€
+      </h2>
+      <p class="font-normal leading-[1.2] text-lg tracking-[-0.72px] w-full">
+        Umsatz in 2025
+      </p>
+    </div>
+    <img
+      src="/icons/stat-revenue.svg"
+      alt=""
+      class="absolute bottom-0.5 right-0.5 h-[116.5px] w-[280.5px] pointer-events-none"
+    />
+  </div>
+</section>
 
   <!-- Construction photo banner -->
   <section class="flex flex-col h-125 md:h-158.75 items-start px-6 w-full">
