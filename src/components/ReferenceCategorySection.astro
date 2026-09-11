@@ -1,0 +1,65 @@
+---
+import ReferenceCard from "./ReferenceCard.astro";
+
+interface Project {
+  title: string;
+  location: string;
+  gfa: string;
+  date: string;
+  status: "Fertiggestellt" | "In Arbeit";
+  image: string;
+}
+
+interface Props {
+  title: string;
+  tags: string[];
+  groups: [string, Project[]][];
+  defaultOpenKey?: string;
+}
+const { title, tags, groups, defaultOpenKey } = Astro.props;
+---
+<div class="flex flex-col gap-10 items-start w-full">
+  <div class="flex flex-col md:flex-row gap-4 md:items-center justify-between w-full">
+    <h2 class="font-medium text-ink text-3xl md:text-[48px] tracking-[-1.92px]">{title}</h2>
+    <div class="flex flex-wrap gap-2.5 items-center">
+      {tags.map((tag, i) => (
+        <>
+          <p class="font-medium text-ink text-sm whitespace-nowrap">{tag}</p>
+          {i < tags.length - 1 && <span class="bg-accent size-1.5 shrink-0 rounded-full"></span>}
+        </>
+      ))}
+    </div>
+  </div>
+
+  <div class="flex flex-col gap-12 md:gap-15 items-start w-full">
+    {groups.map(([period, projects]) => {
+      const isOngoing = period === "laufend";
+      const periodLabel = isOngoing ? "Im Bau" : period;
+      const statusLabel = isOngoing ? "In Arbeit" : "Fertiggestellte Projekte";
+      return (
+        <details class="group w-full" open={period === defaultOpenKey}>
+          <summary class="flex items-center justify-between pb-1 border-b border-black w-full cursor-pointer list-none marker:hidden select-none">
+            <h3 class="font-display text-ink text-2xl md:text-[32px] tracking-[-1.28px]">{periodLabel}</h3>
+            <div class="flex gap-2.5 items-center">
+              <span class="font-medium text-ink text-sm whitespace-nowrap">{statusLabel}</span>
+              <svg
+                width="16"
+                height="9"
+                viewBox="0 0 16 9"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                class="shrink-0 transition-transform duration-200 group-open:rotate-180"
+                aria-hidden="true"
+              >
+                <path d="M1 1L8 8L15 1" stroke="#1D1B24" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
+          </summary>
+          <div class="flex flex-col gap-6 pt-6 w-full">
+            {projects.map((p) => <ReferenceCard {...p} />)}
+          </div>
+        </details>
+      );
+    })}
+  </div>
+</div>
