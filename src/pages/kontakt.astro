@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import CornerGrid from "../components/CornerGrid.astro";
+import Button from "../components/Button.astro";
 import { site } from "../data/site";
 
 const [addressLine1, addressLine2] = site.address.split(", ");
@@ -121,10 +122,7 @@ const placeholderLinks = [
       </div>
 
       <div class="flex flex-col gap-3 items-center">
-        <button type="submit" class="inline-flex items-center justify-center gap-2.5 bg-[#171b1f] text-white px-8 py-4 hover:opacity-95 transition-opacity">
-          <span class="bg-accent size-1.5 shrink-0"></span>
-          <span class="font-medium text-sm leading-none">Anfrage senden</span>
-        </button>
+        <Button type="submit" variant="dark">Anfrage senden</Button>
         <p class="font-normal text-[#171b1f] text-base text-center leading-[1.5]">Wir melden uns innerhalb eines Tages</p>
       </div>
     </form>

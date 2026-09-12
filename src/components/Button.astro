@@ -1,15 +1,26 @@
 ---
 interface Props {
   href?: string;
+  type?: "button" | "submit" | "reset";
   variant?: "primary" | "dark";
+  rounded?: boolean;
   class?: string;
 }
 
-const { href = "#", variant = "primary", class: className = "" } = Astro.props;
-const base = "inline-flex items-center justify-center gap-[10px] p-4 rounded-lg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/80";
+const { href, type, variant = "primary", rounded = false, class: className = "" } = Astro.props;
+const base = "inline-flex items-center justify-center gap-[10px] p-4 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/80";
 const styles = variant === "primary" ? "bg-accent text-white" : "bg-ink text-white";
+const classes = [base, styles, rounded && "rounded-lg", className];
+const dotClasses = ["size-1.5", "shrink-0", variant === "primary" ? "bg-ink" : "bg-accent"];
 ---
-<a href={href} class:list={[base, styles, className]}>
-  <span class:list={["size-1.5", "shrink-0", variant === "primary" ? "bg-ink" : "bg-accent"]}></span>
-  <span class="font-medium text-sm leading-none whitespace-nowrap"><slot /></span>
-</a>
+{href ? (
+  <a href={href} class:list={classes}>
+    <span class:list={dotClasses}></span>
+    <span class="font-medium text-sm leading-none whitespace-nowrap"><slot /></span>
+  </a>
+) : (
+  <button type={type ?? "button"} class:list={classes}>
+    <span class:list={dotClasses}></span>
+    <span class="font-medium text-sm leading-none whitespace-nowrap"><slot /></span>
+  </button>
+)}
