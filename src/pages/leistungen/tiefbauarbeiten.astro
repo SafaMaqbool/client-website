@@ -8,34 +8,34 @@ import ListItem from "../../components/ListItem.astro";
 <Layout title="Tiefbauarbeiten | Bauunternehmen Goch, NRW" description="Ausführung aller Erd- und Tiefbauarbeiten.">
   <LeistungenNav />
 
-  <section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
-    <div class="flex flex-1 flex-col gap-6 items-start">
-      <p class="font-medium text-accent text-sm uppercase tracking-wide">Tiefbauarbeiten</p>
-      <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">Ausführung aller Erd- und Tiefbauarbeiten.</h1>
-      <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">
+  <section class="bg-white flex flex-col lg:flex-row items-stretch w-full">
+    <div class="bg-[#f3f7fd] flex flex-col gap-4 items-start px-6 md:px-15 py-12 md:py-20 w-full lg:w-132.5 shrink-0">
+      <div class="flex gap-2.5 items-center">
+        <span class="bg-accent size-1.5 shrink-0"></span>
+        <p class="font-medium text-ink text-sm leading-none">Tiefbauarbeiten</p>
+      </div>
+      <h1 class="font-display text-ink text-[40px] leading-[1.1] tracking-[-1.6px]">Ausführung aller Erd- und Tiefbauarbeiten.</h1>
+      <p class="font-normal text-ink text-lg leading-[1.2] tracking-[-0.72px]">
         Im Bereich Tief- und Kanalbau realisieren wir zuverlässige Infrastrukturlösungen für private, gewerbliche und öffentliche Auftraggeber. Mit zeitgemäßer Technik, fachlichem Know-how und langjähriger Erfahrung setzen wir Projekte präzise, wirtschaftlich und termingerecht um.
       </p>
     </div>
-    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px]">
-      <img src="/images/tiefbau-hero.jpg" alt="Tiefbauarbeiten auf der Baustelle" class="w-full h-full object-cover" />
-    </div>
-  </section>
 
-  <section class="bg-white flex flex-col gap-10 items-start px-[60px] pb-20 w-full">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 w-full">
-      <NumberedList title="Erdarbeiten & Kanalbau">
-        <ListItem number={1}>Erdarbeiten und Baugrubenerstellung</ListItem>
-        <ListItem number={2}>Aushub-, Verbauarbeiten und Bodenmanagement</ListItem>
-        <ListItem number={3}>Verlegung von Entwässerungs- und Kanalsystemen (Schmutz-, Regen- und Mischwasser)</ListItem>
-        <ListItem number={4}>Herstellung von Hausanschlüssen und Grundstücksentwässerungen</ListItem>
-        <ListItem number={5}>Einbau von Schächten, Rigolen und Rückhaltesystemen</ListItem>
-      </NumberedList>
-      <NumberedList title="Straßen- & Rohrleitungsbau">
-        <ListItem number={1}>Rohrleitungsbau für Ver- und Entsorgungsleitungen</ListItem>
-        <ListItem number={2}>Straßen- und Wegebau inklusive Unterbau und Befestigung</ListItem>
-        <ListItem number={3}>Pflaster- und Oberflächenarbeiten</ListItem>
-        <ListItem number={4}>Sanierung und Instandsetzung bestehender Kanalanlagen</ListItem>
-      </NumberedList>
+    <div class="flex-1 flex flex-col items-start px-6 md:px-15 py-12 md:py-20 w-full">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 w-full">
+        <NumberedList title="Erdarbeiten & Kanalbau">
+          <ListItem number={1}>Erdarbeiten und Baugrubenerstellung</ListItem>
+          <ListItem number={2}>Aushub-, Verbauarbeiten und Bodenmanagement</ListItem>
+          <ListItem number={3}>Verlegung von Entwässerungs- und Kanalsystemen (Schmutz-, Regen- und Mischwasser)</ListItem>
+          <ListItem number={4}>Herstellung von Hausanschlüssen und Grundstücksentwässerungen</ListItem>
+          <ListItem number={5}>Einbau von Schächten, Rigolen und Rückhaltesystemen</ListItem>
+        </NumberedList>
+        <NumberedList title="Straßen- & Rohrleitungsbau">
+          <ListItem number={1}>Rohrleitungsbau für Ver- und Entsorgungsleitungen</ListItem>
+          <ListItem number={2}>Straßen- und Wegebau inklusive Unterbau und Befestigung</ListItem>
+          <ListItem number={3}>Pflaster- und Oberflächenarbeiten</ListItem>
+          <ListItem number={4}>Sanierung und Instandsetzung bestehender Kanalanlagen</ListItem>
+        </NumberedList>
+      </div>
     </div>
   </section>
 

@@ -8,33 +8,37 @@ import ListItem from "../../components/ListItem.astro";
 <Layout title="Photovoltaikanlagen | Bauunternehmen Goch, NRW" description="Nachhaltige Stromerzeugung, maßgeschneidert.">
   <LeistungenNav />
 
-  <section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
-    <div class="flex flex-1 flex-col gap-6 items-start">
-      <p class="font-medium text-accent text-sm uppercase tracking-wide">Photovoltaikanlagen</p>
-      <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">Nachhaltige Stromerzeugung, maßgeschneidert.</h1>
-      <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">
+  <section class="bg-white flex flex-col lg:flex-row items-stretch w-full">
+    <div class="bg-[#f3f7fd] flex flex-col gap-4 items-start px-6 md:px-15 py-12 md:py-20 w-full lg:w-132.5 shrink-0">
+      <div class="flex gap-2.5 items-center">
+        <span class="bg-accent size-1.5 shrink-0"></span>
+        <p class="font-medium text-ink text-sm leading-none">Photovoltaikanlagen</p>
+      </div>
+      <h1 class="font-display text-ink text-[40px] leading-[1.1] tracking-[-1.6px]">Nachhaltige Stromerzeugung, maßgeschneidert.</h1>
+      <p class="font-normal text-ink text-lg leading-[1.2] tracking-[-0.72px]">
         Wir bieten maßgeschneiderte Lösungen zur nachhaltigen Stromerzeugung für private, gewerbliche und landwirtschaftliche Anwendungen. Von der ersten Beratung bis zur Inbetriebnahme erhalten Sie bei uns alle Leistungen aus einer Hand.
       </p>
     </div>
-    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px] bg-sand"></div>
-  </section>
 
-  <section class="bg-white flex flex-col gap-8 items-start px-[60px] pb-12 w-full">
-    <h2 class="font-display text-ink text-[32px] tracking-[-1px]">Unser Leistungsspektrum</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3 w-full">
-      <NumberedList>
-        <ListItem number={1}>Individuelle Beratung und Planung von Photovoltaikanlagen</ListItem>
-        <ListItem number={2}>Wirtschaftlichkeitsberechnung und Ertragsprognosen</ListItem>
-        <ListItem number={3}>Lieferung und Montage von Solarmodulen auf Dach- und Freiflächen</ListItem>
-        <ListItem number={4}>Installation von Wechselrichtern und Energiemanagementsystemen</ListItem>
-        <ListItem number={5}>Integration von Stromspeichern zur Eigenverbrauchsoptimierung</ListItem>
-      </NumberedList>
-      <NumberedList>
-        <ListItem number={6}>Kombination mit Wärmepumpen und Ladeinfrastruktur (E-Mobilität)</ListItem>
-        <ListItem number={7}>Netzanschluss und Abstimmung mit Energieversorgern</ListItem>
-        <ListItem number={8}>Anmeldung und Inbetriebnahme der Anlage</ListItem>
-        <ListItem number={9}>Wartung, Monitoring und Serviceleistungen</ListItem>
-      </NumberedList>
+    <div class="flex-1 flex flex-col items-start px-6 md:px-15 py-12 md:py-20 w-full">
+      <div class="flex flex-col gap-1.5 items-start w-full">
+        <h2 class="font-semibold text-ink text-xl tracking-[-0.4px] leading-none">Unser Leistungsspektrum</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 w-full">
+          <NumberedList>
+            <ListItem number={1}>Individuelle Beratung und Planung von Photovoltaikanlagen</ListItem>
+            <ListItem number={2}>Wirtschaftlichkeitsberechnung und Ertragsprognosen</ListItem>
+            <ListItem number={3}>Lieferung und Montage von Solarmodulen auf Dach- und Freiflächen</ListItem>
+            <ListItem number={4}>Installation von Wechselrichtern und Energiemanagementsystemen</ListItem>
+            <ListItem number={5}>Integration von Stromspeichern zur Eigenverbrauchsoptimierung</ListItem>
+          </NumberedList>
+          <NumberedList>
+            <ListItem number={6}>Kombination mit Wärmepumpen und Ladeinfrastruktur (E-Mobilität)</ListItem>
+            <ListItem number={7}>Netzanschluss und Abstimmung mit Energieversorgern</ListItem>
+            <ListItem number={8}>Anmeldung und Inbetriebnahme der Anlage</ListItem>
+            <ListItem number={9}>Wartung, Monitoring und Serviceleistungen</ListItem>
+          </NumberedList>
+        </div>
+      </div>
     </div>
   </section>
 

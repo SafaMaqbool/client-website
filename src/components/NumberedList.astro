@@ -4,9 +4,9 @@ interface Props {
 }
 const { title } = Astro.props;
 ---
-<div class="flex flex-col gap-4 items-start w-full">
-  {title && <h3 class="font-semibold text-ink text-xl">{title}</h3>}
-  <ol class="flex flex-col gap-3 items-start w-full">
+<div class="flex flex-col gap-3 items-start w-full">
+  {title && <h3 class="font-semibold text-ink text-xl tracking-[-0.4px]">{title}</h3>}
+  <ol class="flex flex-col items-start w-full">
     <slot />
   </ol>
 </div>

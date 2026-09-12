@@ -4,7 +4,7 @@ interface Props {
 }
 const { number } = Astro.props;
 ---
-<li class="flex gap-3 items-start w-full">
-  <span class="bg-sand flex items-center justify-center rounded-full size-6 shrink-0 font-semibold text-ink text-xs">{number}</span>
-  <p class="font-normal text-[#171b1f] text-base leading-[1.4] pt-0.5"><slot /></p>
+<li class="flex gap-3 items-start border-b border-[#dbe0ec] py-2.5 w-full">
+  <span class="font-bold text-skyblue text-xl tracking-[-0.8px] w-5 shrink-0">{number}.</span>
+  <p class="flex-1 font-normal text-ink text-lg leading-[1.2] tracking-[-0.72px]"><slot /></p>
 </li>

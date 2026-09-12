@@ -24,24 +24,24 @@ type NavItem = {
 export const navItems: ReadonlyArray<NavItem> = [
   { label: "Home", href: "/" },
   { label: "Über uns", href: "/ueber-uns" },
-  { label: "Leistungen", href: "/leistungen", dropdown: true },
+  { label: "Leistungen", href: "/leistungen/generalunternehmer", dropdown: true },
   { label: "Referenzen", href: "/referenzen", dropdown: true },
   { label: "Kontakt", href: "/kontakt" },
 ];
 
 export const serviceItems = [
-  "Generalunternehmerleistungen",
-  "Planung und Architektur",
-  "Rohbauarbeiten",
-  "Tiefbauarbeiten",
-  "Heizung- und Sanitärarbeiten",
-  "Stahlhallenbau",
-  "Photovoltaikanlagen",
+  { label: "Generalunternehmerleistungen", href: "/leistungen/generalunternehmer" },
+  { label: "Planung und Architektur", href: "/leistungen/planung-architektur" },
+  { label: "Rohbauarbeiten", href: "/leistungen/rohbauarbeiten" },
+  { label: "Tiefbauarbeiten", href: "/leistungen/tiefbauarbeiten" },
+  { label: "Heizung- und Sanitärarbeiten", href: "/leistungen/heizung-sanitaer" },
+  { label: "Stahlhallenbau", href: "/leistungen/stahlhallenbau" },
+  { label: "Photovoltaikanlagen", href: "/leistungen/photovoltaikanlagen" },
 ] as const;
 
 export const footerNavigation = [
   { label: "Über uns", href: "/ueber-uns" },
-  { label: "Leistungen", href: "/leistungen" },
+  { label: "Leistungen", href: "/leistungen/generalunternehmer" },
   { label: "Referenzen", href: "/referenzen" },
   { label: "Kontakt", href: "/kontakt" },
 ] as const;

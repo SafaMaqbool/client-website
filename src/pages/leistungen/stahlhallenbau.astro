@@ -8,32 +8,36 @@ import ListItem from "../../components/ListItem.astro";
 <Layout title="Stahlhallenbau | Bauunternehmen Goch, NRW" description="Für Industrie, Gewerbe, Landwirtschaft & Logistik.">
   <LeistungenNav />
 
-  <section class="bg-white flex flex-col md:flex-row gap-[60px] items-center px-[60px] py-16 w-full">
-    <div class="flex flex-1 flex-col gap-6 items-start">
-      <p class="font-medium text-accent text-sm uppercase tracking-wide">Stahlhallenbau</p>
-      <h1 class="font-display text-ink text-[44px] leading-[1.1] tracking-[-1.6px]">Für Industrie, Gewerbe, Landwirtschaft & Logistik.</h1>
-      <p class="font-normal text-[#171b1f] text-lg leading-[1.4] tracking-[-0.4px] max-w-[560px]">
+  <section class="bg-white flex flex-col lg:flex-row items-stretch w-full">
+    <div class="bg-[#f3f7fd] flex flex-col gap-4 items-start px-6 md:px-15 py-12 md:py-20 w-full lg:w-132.5 shrink-0">
+      <div class="flex gap-2.5 items-center">
+        <span class="bg-accent size-1.5 shrink-0"></span>
+        <p class="font-medium text-ink text-sm leading-none">Stahlhallenbau</p>
+      </div>
+      <h1 class="font-display text-ink text-[40px] leading-[1.1] tracking-[-1.6px]">Für Industrie, Gewerbe, Landwirtschaft & Logistik.</h1>
+      <p class="font-normal text-ink text-lg leading-[1.2] tracking-[-0.72px]">
         Wir realisieren moderne Stahlhallen, wirtschaftlich, langlebig und individuell auf die Anforderungen unserer Kunden abgestimmt. Von der Planung bis zur Montage bieten wir sämtliche Leistungen aus einer Hand. Ob Produktionshalle, Lagerhalle, Werkstatt, Maschinenhalle oder Gewerbebau.
       </p>
     </div>
-    <div class="flex-1 w-full h-[360px] rounded-2xl overflow-hidden shrink-0 max-w-[560px] bg-sand"></div>
-  </section>
 
-  <section class="bg-white flex flex-col gap-8 items-start px-[60px] pb-20 w-full">
-    <h2 class="font-display text-ink text-[32px] tracking-[-1px]">Unsere Leistungen im Bereich Stahlhallenbau</h2>
-    <NumberedList>
-      <ListItem number={1}>Planung und Konstruktion von Stahlhallen</ListItem>
-      <ListItem number={2}>Tragwerks- und Stahlbauarbeiten</ListItem>
-      <ListItem number={3}>Lieferung und Montage von Stahlkonstruktionen</ListItem>
-      <ListItem number={4}>Dach- und Wandverkleidungen</ListItem>
-      <ListItem number={5}>Hallenerweiterungen und Umbauten</ListItem>
-      <ListItem number={6}>Einbau von Toranlagen, Türen und Fenstern</ListItem>
-      <ListItem number={7}>Industrie- und Gewerbehallen nach individuellen Anforderungen</ListItem>
-      <ListItem number={8}>Wartung, Instandsetzung und Sanierungsarbeiten</ListItem>
-    </NumberedList>
-    <p class="font-normal text-[#171b1f] text-base leading-[1.5] max-w-[720px]">
-      Durch den Einsatz hochwertiger Materialien und moderner Fertigungstechniken gewährleisten wir langlebige und wirtschaftliche Lösungen, von der Fundamentvorbereitung bis zur fertigen Halle.
-    </p>
+    <div class="flex-1 flex flex-col gap-10 items-start px-6 md:px-15 py-12 md:py-20 w-full">
+      <div class="flex flex-col gap-1.5 items-start w-full">
+        <h2 class="font-semibold text-ink text-xl tracking-[-0.4px] leading-none">Unsere Leistungen im Bereich Stahlhallenbau</h2>
+        <NumberedList>
+          <ListItem number={1}>Planung und Konstruktion von Stahlhallen</ListItem>
+          <ListItem number={2}>Tragwerks- und Stahlbauarbeiten</ListItem>
+          <ListItem number={3}>Lieferung und Montage von Stahlkonstruktionen</ListItem>
+          <ListItem number={4}>Dach- und Wandverkleidungen</ListItem>
+          <ListItem number={5}>Hallenerweiterungen und Umbauten</ListItem>
+          <ListItem number={6}>Einbau von Toranlagen, Türen und Fenstern</ListItem>
+          <ListItem number={7}>Industrie- und Gewerbehallen nach individuellen Anforderungen</ListItem>
+          <ListItem number={8}>Wartung, Instandsetzung und Sanierungsarbeiten</ListItem>
+        </NumberedList>
+      </div>
+      <p class="font-normal text-ink text-2xl leading-[1.2] tracking-[-0.96px] w-full">
+        Durch den Einsatz hochwertiger Materialien und moderner Fertigungstechniken gewährleisten wir langlebige und wirtschaftliche Lösungen, von der Fundamentvorbereitung bis zur fertigen Halle.
+      </p>
+    </div>
   </section>
 
   <ContactCTA />

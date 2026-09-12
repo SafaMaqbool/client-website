@@ -1,4 +1,6 @@
 ---
+import CornerGrid from "./CornerGrid.astro";
+
 const services = [
   { label: "Generalunternehmer", href: "/leistungen/generalunternehmer" },
   { label: "Planung / Architektur", href: "/leistungen/planung-architektur" },
@@ -10,24 +12,29 @@ const services = [
 ];
 const currentPath = Astro.url.pathname;
 ---
-<section class="bg-white flex flex-col gap-4 items-start px-[60px] pt-10 w-full">
-  <div class="flex gap-2.5 items-center">
-    <span class="bg-accent size-1.5 shrink-0"></span>
-    <p class="font-medium text-ink text-sm leading-none">Leistungen</p>
+<section class="relative bg-ink flex flex-col items-center pt-5 pb-10 w-full overflow-hidden">
+  <CornerGrid class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-50 rotate-180 z-0" />
+  <CornerGrid class="absolute -bottom-1 -right-1 w-52.5 h-42 opacity-60 z-0" />
+
+  <div class="h-20 w-full shrink-0"></div>
+
+  <div class="relative z-10 flex flex-col items-start w-full max-w-310 pt-16 pb-6 px-15">
+    <h1 class="font-semibold text-white text-[56px] md:text-[80px] leading-none tracking-[-3.2px]">Leistungen</h1>
   </div>
-  <nav class="flex items-center gap-8 border-b border-sand w-full overflow-x-auto">
-    {services.map((s) => (
-      <a
-        href={s.href}
-        class:list={[
-          "text-[15px] leading-6 whitespace-nowrap pb-4 border-b-2",
-          currentPath === s.href
-            ? "font-semibold text-ink border-accent"
-            : "font-normal text-muted border-transparent hover:text-ink",
-        ]}
-      >
-        {s.label}
-      </a>
-    ))}
-  </nav>
 </section>
+
+<nav aria-label="Leistungen" class="bg-skyblue flex items-center gap-3.25 justify-center md:justify-start px-2 md:px-2.25 overflow-x-auto w-full">
+  {services.map((s) => (
+    <a
+      href={s.href}
+      class:list={[
+        "flex items-center h-17.75 px-3.75 shrink-0 text-[15px] leading-[1.2] whitespace-nowrap border-b-4",
+        currentPath === s.href
+          ? "font-extrabold text-ink border-ink"
+          : "font-medium text-ink border-transparent hover:border-ink/30",
+      ]}
+    >
+      {s.label}
+    </a>
+  ))}
+</nav>
