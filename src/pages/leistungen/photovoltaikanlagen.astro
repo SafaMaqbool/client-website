@@ -9,18 +9,30 @@ import ListItem from "../../components/ListItem.astro";
   <LeistungenNav />
 
   <section class="bg-white flex flex-col lg:flex-row items-stretch w-full">
-    <div class="bg-[#f3f7fd] flex flex-col gap-4 items-start px-6 md:px-15 py-12 md:py-20 w-full lg:w-132.5 shrink-0">
-      <div class="flex gap-2.5 items-center">
-        <span class="bg-accent size-1.5 shrink-0"></span>
-        <p class="font-medium text-ink text-sm leading-none">Photovoltaikanlagen</p>
+    <div class="bg-[#f3f7fd] flex flex-col gap-10 items-start px-6 md:px-15 py-12 md:py-20 w-full lg:w-132.5 shrink-0">
+      <div class="flex flex-col gap-4 items-start w-full">
+        <div class="flex gap-2.5 items-center">
+          <span class="bg-accent size-1.5 shrink-0"></span>
+          <p class="font-medium text-ink text-sm leading-none">Photovoltaikanlagen</p>
+        </div>
+        <h1 class="font-display text-ink text-[40px] leading-[1.1] tracking-[-1.6px]">Nachhaltige Stromerzeugung, maßgeschneidert.</h1>
+        <p class="font-normal text-ink text-lg leading-[1.2] tracking-[-0.72px]">
+          Wir bieten maßgeschneiderte Lösungen zur nachhaltigen Stromerzeugung für private, gewerbliche und landwirtschaftliche Anwendungen. Von der ersten Beratung bis zur Inbetriebnahme erhalten Sie bei uns alle Leistungen aus einer Hand.
+        </p>
       </div>
-      <h1 class="font-display text-ink text-[40px] leading-[1.1] tracking-[-1.6px]">Nachhaltige Stromerzeugung, maßgeschneidert.</h1>
-      <p class="font-normal text-ink text-lg leading-[1.2] tracking-[-0.72px]">
-        Wir bieten maßgeschneiderte Lösungen zur nachhaltigen Stromerzeugung für private, gewerbliche und landwirtschaftliche Anwendungen. Von der ersten Beratung bis zur Inbetriebnahme erhalten Sie bei uns alle Leistungen aus einer Hand.
-      </p>
+      <div class="bg-[#dde7f5] flex flex-col items-start justify-center p-6 md:p-10 rounded-2xl w-full">
+        <a
+          href="https://www.7yrds-energy.de/"
+          target="_blank"
+          rel="noreferrer noopener"
+          class="font-semibold text-accent text-lg leading-[1.2] tracking-[-0.72px] underline underline-offset-4"
+        >
+          Für umfassende Photovoltaik- und Energiemanagementlösungen besuchen Sie unsere Tochtergesellschaft 7YRDS Energy GmbH →
+        </a>
+      </div>
     </div>
 
-    <div class="flex-1 flex flex-col items-start px-6 md:px-15 py-12 md:py-20 w-full">
+    <div class="flex-1 flex flex-col gap-10 items-start px-6 md:px-15 py-12 md:py-20 w-full">
       <div class="flex flex-col gap-1.5 items-start w-full">
         <h2 class="font-semibold text-ink text-xl tracking-[-0.4px] leading-none">Unser Leistungsspektrum</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 w-full">
@@ -39,21 +51,10 @@ import ListItem from "../../components/ListItem.astro";
           </NumberedList>
         </div>
       </div>
+      <p class="font-normal text-ink text-2xl leading-[1.2] tracking-[-0.96px] w-full">
+        Hochwertige Komponenten, moderne Technik und fachgerechte Installation — jede Anlage individuell auf die jeweiligen Gegebenheiten und Anforderungen abgestimmt.
+      </p>
     </div>
-  </section>
-
-  <section class="bg-sand/40 flex flex-col md:flex-row items-center justify-between gap-8 mx-15 mb-16 p-8 rounded-2xl">
-    <p class="font-normal text-[#171b1f] text-base leading-normal max-w-150">
-      Hochwertige Komponenten, moderne Technik und fachgerechte Installation — jede Anlage individuell auf die jeweiligen Gegebenheiten und Anforderungen abgestimmt.
-    </p>
-    <a
-      href="https://www.7yrds-energy.de/"
-      target="_blank"
-      rel="noreferrer noopener"
-      class="font-semibold text-accent text-base whitespace-nowrap underline underline-offset-4"
-    >
-      Für umfassende Photovoltaik- und Energiemanagementlösungen besuchen Sie unsere Tochtergesellschaft 7YRDS Energy GmbH →
-    </a>
   </section>
 
   <ContactCTA variant="accent"/>
