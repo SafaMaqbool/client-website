@@ -8,8 +8,9 @@ interface Props {
   date: string;
   status: "Fertiggestellt" | "In Arbeit";
   image: ImageMetadata;
+  priority?: boolean;
 }
-const { title, location, gfa, date, status, image } = Astro.props;
+const { title, location, gfa, date, status, image, priority = false } = Astro.props;
 const isDone = status === "Fertiggestellt";
 ---
 <div class="flex flex-col md:flex-row items-stretch w-full md:h-105 overflow-hidden rounded-2xl md:rounded-none">
@@ -44,6 +45,6 @@ const isDone = status === "Fertiggestellt";
     </div>
   </div>
   <div class="flex-1 min-w-0 h-64 md:h-full">
-    <Image src={image} alt={title} class="w-full h-full object-cover" />
+    <Image src={image} alt={title} class="w-full h-full object-cover" loading={priority ? "eager" : "lazy"} />
   </div>
 </div>

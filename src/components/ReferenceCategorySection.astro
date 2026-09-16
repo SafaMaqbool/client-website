@@ -56,7 +56,9 @@ const { title, tags, groups, defaultOpenKey } = Astro.props;
             </div>
           </summary>
           <div class="flex flex-col gap-6 pt-6 w-full">
-            {projects.map((p) => <ReferenceCard {...p} />)}
+            {projects.map((p, i) => (
+              <ReferenceCard {...p} priority={period === defaultOpenKey && i === 0} />
+            ))}
           </div>
         </details>
       );
