@@ -1,11 +1,13 @@
 ---
+import { Image } from "astro:assets";
+
 interface Props {
   title: string;
   location: string;
   gfa: string;
   date: string;
   status: "Fertiggestellt" | "In Arbeit";
-  image: string;
+  image: ImageMetadata;
 }
 const { title, location, gfa, date, status, image } = Astro.props;
 const isDone = status === "Fertiggestellt";
@@ -42,6 +44,6 @@ const isDone = status === "Fertiggestellt";
     </div>
   </div>
   <div class="flex-1 min-w-0 h-64 md:h-full">
-    <img src={image} alt={title} class="w-full h-full object-cover" />
+    <Image src={image} alt={title} class="w-full h-full object-cover" />
   </div>
 </div>

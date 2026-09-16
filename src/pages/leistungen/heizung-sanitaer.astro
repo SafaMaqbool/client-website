@@ -1,9 +1,11 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import LeistungenNav from "../../components/LeistungenNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
 import NumberedList from "../../components/NumberedList.astro";
 import ListItem from "../../components/ListItem.astro";
+import heizungHero from "../../assets/images/heizung-hero.jpg";
 ---
 <Layout title="Heizung- und Sanitärarbeiten | Bauunternehmen Goch, NRW" description="Modern, energieeffizient, nachhaltig.">
   <LeistungenNav />
@@ -19,7 +21,7 @@ import ListItem from "../../components/ListItem.astro";
         Im Bereich Heizungs- und Sanitärtechnik bieten wir moderne, energieeffiziente und nachhaltige Lösungen für Neubau und Bestand. Unser besonderer Fokus liegt auf der Planung und Installation von Wärmepumpensystemen als zukunftssichere Heiztechnologie.
       </p>
       <div class="w-full mt-10 aspect-410/138 overflow-hidden [clip-path:polygon(0_0,calc(100%-34px)_0,100%_32px,100%_100%,0_100%)]">
-        <img src="/images/heizung-hero.jpg" alt="Installation einer Wärmepumpe" class="w-full h-full object-cover" />
+        <Image src={heizungHero} alt="Installation einer Wärmepumpe" class="w-full h-full object-cover" />
       </div>
     </div>
 

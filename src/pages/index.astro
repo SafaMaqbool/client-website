@@ -1,15 +1,39 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
 import ContactCTA from "../components/ContactCTA.astro";
 import CornerGrid from "../components/CornerGrid.astro";
 
+import heroBg from "../assets/images/hero-bg.jpg";
+import aboutCard from "../assets/images/about-card.jpg";
+import constructionPhoto from "../assets/images/construction-photo.jpg";
+import service1 from "../assets/images/service-1.jpg";
+import service2 from "../assets/images/service-2.jpg";
+import service3 from "../assets/images/service-3.jpg";
+import service4 from "../assets/images/service-4.jpg";
+import service5 from "../assets/images/service-5.jpg";
+import service6 from "../assets/images/service-6.jpg";
+import service7 from "../assets/images/service-7.jpg";
+import project1 from "../assets/images/project-1.jpg";
+import project2 from "../assets/images/project-2.jpg";
+import project3 from "../assets/images/project-3.jpg";
+
+import iconPrivate from "../assets/icons/private.svg";
+import iconGewerbe from "../assets/icons/gewerbe.svg";
+import iconOeffentlicheHand from "../assets/icons/oeffentliche-hand.svg";
+import iconProjektentwickler from "../assets/icons/projektentwickler.svg";
+import iconArchitekten from "../assets/icons/architekten.svg";
+import iconStatProject from "../assets/icons/stat-project.svg";
+import iconStatExperience from "../assets/icons/stat-experience.svg";
+import iconStatRevenue from "../assets/icons/stat-revenue.svg";
+
 const audiences = [
-  { label: "Private Auftraggeber", icon: "/icons/private.svg" },
-  { label: "Gewerbliche Bauherren", icon: "/icons/gewerbe.svg" },
-  { label: "Öffentliche Hand", icon: "/icons/oeffentliche-hand.svg" },
-  { label: "Projektentwickler", icon: "/icons/projektentwickler.svg" },
-  { label: "Architekten & Planer", icon: "/icons/architekten.svg" },
+  { label: "Private Auftraggeber", icon: iconPrivate },
+  { label: "Gewerbliche Bauherren", icon: iconGewerbe },
+  { label: "Öffentliche Hand", icon: iconOeffentlicheHand },
+  { label: "Projektentwickler", icon: iconProjektentwickler },
+  { label: "Architekten & Planer", icon: iconArchitekten },
 ];
 
 const stats = [
@@ -21,37 +45,37 @@ const stats = [
 const services = [
   {
     title: "Generalunternehmer- leistungen",
-    image: "/images/service-1.jpg",
+    image: service1,
     href: "/leistungen/generalunternehmer",
   },
   {
     title: "Planung und Architektur",
-    image: "/images/service-2.jpg",
+    image: service2,
     href: "/leistungen/planung-architektur",
   },
   {
     title: "Rohbauarbeiten",
-    image: "/images/service-3.jpg",
+    image: service3,
     href: "/leistungen/rohbauarbeiten",
   },
   {
     title: "Tiefbauarbeiten",
-    image: "/images/service-4.jpg",
+    image: service4,
     href: "/leistungen/tiefbauarbeiten",
   },
   {
     title: "Heizung- und Sanitärarbeiten",
-    image: "/images/service-5.jpg",
+    image: service5,
     href: "/leistungen/heizung-sanitaer",
   },
   {
     title: "Stahlhallenbau",
-    image: "/images/service-6.jpg",
+    image: service6,
     href: "/leistungen/stahlhallenbau",
   },
   {
     title: "Photovoltaikanlagen",
-    image: "/images/service-7.jpg",
+    image: service7,
     href: "/leistungen/photovoltaikanlagen",
   },
 ];
@@ -62,10 +86,12 @@ const services = [
   <section
     class="relative flex flex-col items-center pt-5 pb-10 w-full overflow-hidden"
   >
-    <img
-      src="/images/hero-bg.jpg"
+    <Image
+      src={heroBg}
       alt="Baustelle mit Kran"
       class="absolute inset-0 w-full object-cover z-0"
+      loading="eager"
+      fetchpriority="high"
     />
     <div class="absolute inset-0 bg-black/35 z-10"></div>
     <CornerGrid
@@ -115,7 +141,7 @@ const services = [
               i < audiences.length - 1 && "border-r border-skyblueLine",
             ]}
           >
-            <img src={a.icon} alt="" class="w-20 h-20 shrink-0" />
+            <Image src={a.icon} alt="" class="w-20 h-20 shrink-0" loading="eager" />
             <p class="font-bold text-base text-black leading-normal">
               {a.label}
             </p>
@@ -130,10 +156,11 @@ const services = [
     class="bg-white flex flex-col md:flex-row gap-25 items-center px-15 py-20 w-full"
   >
     <div class="flex-1 h-122 rounded-lg overflow-hidden [clip-path:polygon(0_0,calc(100%-56px)_0,100%_56px,100%_100%,0_100%)]">
-      <img
-        src="/images/about-card.jpg"
+      <Image
+        src={aboutCard}
         alt="Energieverbrauchsdaten auf einem Display"
         class="w-full h-full object-cover"
+        loading="lazy"
       />
     </div>
     <div class="flex flex-1 flex-col gap-12.5 items-end justify-center">
@@ -180,10 +207,11 @@ const services = [
         Projekte fertiggestellt
       </p>
     </div>
-    <img
-      src="/icons/stat-project.svg"
+    <Image
+      src={iconStatProject}
       alt=""
       class="absolute bottom-0 -right-1 h-37.75 w-60.25 pointer-events-none"
+      loading="lazy"
     />
   </div>
 
@@ -196,10 +224,11 @@ const services = [
         Jahre Erfahrung
       </p>
     </div>
-    <img
-      src="/icons/stat-experience.svg"
+    <Image
+      src={iconStatExperience}
       alt=""
       class="absolute left-10 top-30.75 h-28.25 w-50.25 pointer-events-none"
+      loading="lazy"
     />
   </div>
 
@@ -212,20 +241,22 @@ const services = [
         Umsatz in 2025
       </p>
     </div>
-    <img
-      src="/icons/stat-revenue.svg"
+    <Image
+      src={iconStatRevenue}
       alt=""
       class="absolute bottom-0.5 right-0.5 h-[116.5px] w-[280.5px] pointer-events-none"
+      loading="lazy"
     />
   </div>
 </section>
 
   <!-- Construction photo banner -->
   <section class="flex flex-col h-125 md:h-158.75 items-start px-6 w-full">
-    <img
-      src="/images/construction-photo.jpg"
+    <Image
+      src={constructionPhoto}
       alt="Bauarbeiter auf einer Baustelle"
       class="w-full h-full object-cover"
+      loading="lazy"
     />
   </section>
 
@@ -255,10 +286,11 @@ const services = [
             href={s.href}
             class="relative z-0 border border-[#a9b9d6] flex flex-col h-56.25 items-end justify-between p-5 overflow-hidden group"
           >
-            <img
+            <Image
               src={s.image}
               alt={s.title}
               class="absolute inset-0 w-full h-full object-cover z-0"
+              loading="lazy"
             />
             <div class="absolute inset-0 bg-black/40 z-10" />
             <p class="relative z-20 font-normal text-[28px] text-left text-white leading-[1.36] w-full">
@@ -330,28 +362,31 @@ const services = [
       <div
         class="absolute left-25 top-0 w-130.5 h-93 rounded-[20px] overflow-hidden"
       >
-        <img
-          src="/images/project-2.jpg"
+        <Image
+          src={project2}
           alt="Referenzprojekt 1"
           class="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
       <div
         class="absolute left-12.5 top-12.5 w-130.5 h-93 rounded-[20px] overflow-hidden"
       >
-        <img
-          src="/images/project-3.jpg"
+        <Image
+          src={project3}
           alt="Referenzprojekt 2"
           class="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
       <div
         class="absolute left-0 top-25 w-130.5 h-93 rounded-[20px] overflow-hidden"
       >
-        <img
-          src="/images/project-1.jpg"
+        <Image
+          src={project1}
           alt="Referenzprojekt 3"
           class="w-full h-full object-cover"
+          loading="lazy"
         />
       </div>
       <div

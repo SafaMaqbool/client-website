@@ -1,7 +1,9 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../../layouts/Layout.astro";
 import LeistungenNav from "../../components/LeistungenNav.astro";
 import ContactCTA from "../../components/ContactCTA.astro";
+import planungHero from "../../assets/images/planung-hero.jpg";
 
 const processSteps = [
   {
@@ -57,8 +59,8 @@ const processSteps = [
           Wir bieten umfassende Architektur- und Planungsleistungen für private und gewerbliche Auftraggeber. Von der ersten Idee bis zur Realisierung begleiten wir Projekte ganzheitlich und mit einem klaren Fokus auf Qualität, Funktionalität und Wirtschaftlichkeit.
         </p>
       </div>
-      <div class="w-full max-w-68.75 aspect-275/109 rounded-2xl overflow-hidden [clip-path:polygon(0_0,calc(100%-34px)_0,100%_32px,100%_100%,0_100%)]">
-        <img src="/images/planung-hero.jpg" alt="Bauplanung und Architektur" class="w-full h-full object-cover" />
+      <div class="w-full max-w-68.75 aspect-275/109 overflow-hidden [clip-path:polygon(0_0,calc(100%-34px)_0,100%_32px,100%_100%,0_100%)]">
+        <Image src={planungHero} alt="Bauplanung und Architektur" class="w-full h-full object-cover" />
       </div>
       <div class="flex items-center justify-between w-full">
         <h2 class="font-display text-ink text-[32px] tracking-[-1.28px]">Zeichnung/Plan</h2>
