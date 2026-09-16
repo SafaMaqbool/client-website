@@ -13,8 +13,8 @@ const services = [
 const currentPath = Astro.url.pathname;
 ---
 <section class="relative bg-ink flex flex-col items-center pt-5 pb-10 w-full overflow-hidden">
-  <CornerGrid class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-50 rotate-180 z-0" />
-  <CornerGrid class="absolute -bottom-1 -right-1 w-52.5 h-42 opacity-60 z-0" />
+  <CornerGrid class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-20 rotate-180 z-0" />
+  <CornerGrid class="absolute -bottom-1 -right-1 w-52.5 h-42 opacity-20 z-0" />
 
   <div class="h-20 w-full shrink-0"></div>
 
@@ -23,7 +23,7 @@ const currentPath = Astro.url.pathname;
   </div>
 </section>
 
-<nav aria-label="Leistungen" class="bg-skyblue flex items-center gap-3.25 justify-center md:justify-start px-2 md:px-2.25 overflow-x-auto w-full">
+<nav aria-label="Leistungen" class="bg-skyblue flex items-center gap-3.25 justify-center md:justify-start  px-2 md:px-2.25 overflow-x-auto w-full">
   {services.map((s) => (
     <a
       href={s.href}
