@@ -45,6 +45,13 @@ const isDone = status === "Fertiggestellt";
     </div>
   </div>
   <div class="flex-1 min-w-0 h-64 md:h-full">
-    <Image src={image} alt={title} class="w-full h-full object-cover" loading={priority ? "eager" : "lazy"} />
+    <Image
+      src={image}
+      alt={title}
+      class="w-full h-full object-cover"
+      loading={priority ? "eager" : "lazy"}
+      widths={[400, 800, 1200]}
+      sizes="(max-width: 767px) 100vw, 900px"
+    />
   </div>
 </div>
