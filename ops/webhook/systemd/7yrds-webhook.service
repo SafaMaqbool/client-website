@@ -8,8 +8,6 @@ ConditionPathExists=/etc/7yrds-deploy/sites.d
 
 [Service]
 Type=simple
-User=root
-Group=root
 # Root-only defaults: the queue/dedupe SQLite database and its WAL/SHM
 # sidecars must never be group/world readable (release files are chmodded
 # explicitly by deploy-site, so nginx can still read them).
