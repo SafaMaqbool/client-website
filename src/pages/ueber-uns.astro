@@ -40,12 +40,12 @@ const revenue = [
   </section>
 
   <!-- Stats -->
-  <section class="bg-skyblue flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 md:px-15 py-2.5 w-full">
+  <section class="bg-skyblue grid grid-cols-2 lg:grid-cols-4 gap-y-2 px-6 md:px-15 py-2.5 w-full">
     {stats.map((s, i) => (
-      <div class:list={["flex flex-col gap-1 justify-center py-4 sm:py-0 w-full sm:w-62.5", i > 0 && "sm:border-l border-skyblueLine/50 sm:pl-7.5"]}>
-        <h2 class="font-bold text-black text-[32px] leading-normal">{s.value}</h2>
-        <div class="flex items-center gap-1">
-          <p class="font-normal text-black text-base">{s.label}</p>
+      <div class:list={["flex flex-col gap-1 justify-center py-4 lg:py-0 min-w-0", i % 2 === 1 && "border-l border-skyblueLine/50 pl-5 lg:pl-7.5", i === 2 && "lg:border-l border-skyblueLine/50 lg:pl-7.5"]}>
+        <h2 class="font-bold text-black text-[28px] md:text-[32px] leading-normal">{s.value}</h2>
+        <div class="flex items-start gap-1">
+          <p class="font-normal text-black text-sm sm:text-base min-w-0 break-words hyphens-auto">{s.label}</p>
           {s.trend && (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true">
               <path d="M7 17L17 7M17 7H9M17 7V15" stroke="#1D1B24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -57,8 +57,8 @@ const revenue = [
   </section>
 
   <!-- Unser Ansatz -->
-  <section class="bg-white flex flex-col lg:flex-row gap-25 items-start px-6 md:px-15 py-20 w-full">
-    <div class="flex-1 flex flex-col gap-7.5 items-start">
+  <section class="bg-white flex flex-col lg:flex-row gap-12 lg:gap-25 items-start px-6 md:px-15 py-20 w-full">
+    <div class="w-full lg:flex-1 flex flex-col gap-7.5 items-start">
       <div class="flex flex-col gap-4 items-start w-full">
         <div class="flex gap-2.5 items-center">
           <span class="bg-accent size-1.5 shrink-0"></span>
@@ -70,7 +70,7 @@ const revenue = [
         <Image src={ueberUnsHero} alt="Baustelle bei Sonnenuntergang" class="w-full h-full object-cover" loading="eager" />
       </div>
     </div>
-    <div class="flex-1 flex flex-col items-start">
+    <div class="w-full lg:flex-1 flex flex-col items-start">
       {values.map((v, i) => (
         <div class:list={["flex flex-col gap-3 items-start py-6 w-full", i > 0 && "border-t border-skyblue"]}>
           <h3 class="font-medium text-ink text-lg tracking-[-0.36px]">{v.title}</h3>
@@ -91,11 +91,11 @@ const revenue = [
         <h2 class="font-display text-accent text-[32px] md:text-[40px] text-center tracking-[-1.6px] leading-[1.1]">Kontinuierliches Wachstum.</h2>
         <p class="font-normal text-ink text-lg text-center leading-[1.2] tracking-[-0.72px]">Wirtschaftliche Stabilität und Verlässlichkeit seit 2022.</p>
       </div>
-      <div class="flex flex-wrap gap-5 items-center justify-center">
+      <div class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-5 items-center justify-center">
         {revenue.map((r, i) => (
           <>
             {i > 0 && (
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0 rotate-90 sm:rotate-0" aria-hidden="true">
                 <path d="M5 12h14m0 0l-6-6m6 6l-6 6" stroke="#1D1B24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             )}
