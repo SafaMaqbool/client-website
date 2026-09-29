@@ -1,0 +1,50 @@
+# 7YRDS deploy webhook receiver (Bitbucket repo:push -> exact-commit deploy)
+# Installed by ops/webhook/bin/install; code lives in /opt/7yrds-deploy.
+[Unit]
+Description=7YRDS deploy webhook receiver (bau)
+After=network-online.target nginx.service
+Wants=network-online.target
+ConditionPathExists=/etc/7yrds-deploy/sites.d
+
+[Service]
+Type=simple
+User=root
+Group=root
+# Root-only defaults: the queue/dedupe SQLite database and its WAL/SHM
+# sidecars must never be group/world readable (release files are chmodded
+# explicitly by deploy-site, so nginx can still read them).
+UMask=0077
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/opt/7yrds-deploy/bin/receiver.py --config-dir /etc/7yrds-deploy/sites.d --state-dir /var/lib/7yrds-deploy --bind 127.0.0.1 --port 9087
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+KillSignal=SIGTERM
+
+# Resource caps: receiver + build cgroup (design: 640M soft / 768M hard,
+# 1 CPU, 256 tasks, Nice 10).  MemoryMax is what OOM-kills the build.
+MemoryHigh=640M
+MemoryMax=768M
+CPUQuota=100%
+TasksMax=256
+Nice=10
+
+# Hardening (the receiver runs the root-only deploy-site as a child, so
+# every protection below also confines the fetch/build/activate pipeline).
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/var/www/bau /var/lib/7yrds-deploy /var/log/7yrds-deploy /var/log/nginx /run/lock
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+CapabilityBoundingSet=CAP_CHOWN CAP_DAC_OVERRIDE CAP_FOWNER CAP_KILL CAP_SETGID CAP_SETUID CAP_NET_BIND_SERVICE
+WorkingDirectory=/opt/7yrds-deploy
+
+[Install]
+WantedBy=multi-user.target

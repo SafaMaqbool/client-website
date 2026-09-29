@@ -1,0 +1,331 @@
+#!/usr/bin/env python3
+"""Non-secret local health checks for the 7YRDS deploy webhook pipeline.
+
+Reports (never secret *values* -- only paths, modes and booleans):
+config sanity, secret/key/known_hosts presence and permissions, service
+unit state + resource limits, listener binding, SQLite queue state,
+release layout + live metadata, nginx snippet inclusion, disk floor.
+
+Exit status: 0 = no FAIL lines, 1 = at least one FAIL.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import re
+import sqlite3
+import subprocess
+import sys
+from pathlib import Path
+
+PASS = "PASS"
+FAIL = "FAIL"
+WARN = "WARN"
+results = []
+
+
+def report(level, message):
+    results.append(level)
+    print("%-4s %s" % (level, message), flush=True)
+
+
+def check(condition, ok_message, fail_message):
+    if condition:
+        report(PASS, ok_message)
+    else:
+        report(FAIL, fail_message)
+
+
+def run(argv, timeout=20):
+    try:
+        return subprocess.run(
+            argv, capture_output=True, text=True, timeout=timeout
+        )
+    except (OSError, subprocess.TimeoutExpired) as err:
+        return None if isinstance(err, OSError) else None
+
+
+def parse_timespan_usec(value):
+    """Parse a systemd time span ('1s', '150ms', ...) to microseconds.
+
+    Returns None for 'infinity', empty or unparseable values, so a unit with
+    no CPU quota set fails the resource-limit check.
+    """
+    if value is None:
+        return None
+    text = value.strip().lower()
+    if not text or text == "infinity":
+        return None
+    units = {
+        "us": 1,
+        "usec": 1,
+        "ms": 1000,
+        "msec": 1000,
+        "s": 1000000,
+        "sec": 1000000,
+        "min": 60 * 1000000,
+        "m": 60 * 1000000,
+        "h": 3600 * 1000000,
+        "hr": 3600 * 1000000,
+        "d": 86400 * 1000000,
+    }
+    total = 0.0
+    seen = False
+    for number, unit in re.findall(r"(\d+(?:\.\d+)?)\s*([a-z]+)", text):
+        if unit not in units:
+            return None
+        total += float(number) * units[unit]
+        seen = True
+    if not seen:
+        # a bare number is microseconds (systemd raw format)
+        try:
+            return int(text)
+        except ValueError:
+            return None
+    return int(total)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--config-dir", default="/etc/7yrds-deploy/sites.d")
+    parser.add_argument("--state-dir", default="/var/lib/7yrds-deploy")
+    parser.add_argument("--site", default=None, help="limit per-site checks to this site")
+    parser.add_argument("--skip-service", action="store_true")
+    parser.add_argument(
+        "--unit",
+        default="7yrds-webhook.service",
+        help="systemd unit to inspect (default: 7yrds-webhook.service)",
+    )
+    args = parser.parse_args(argv)
+
+    config_dir = Path(args.config_dir)
+    if not config_dir.is_dir():
+        report(FAIL, "config dir missing: %s" % config_dir)
+        return 1
+
+    configs = {}
+    for path in sorted(config_dir.glob("*.json")):
+        try:
+            raw = json.loads(path.read_text())
+            configs[raw["site"]] = raw
+            report(PASS, "config %s parses (site=%s)" % (path, raw.get("site")))
+        except (ValueError, KeyError) as err:
+            report(FAIL, "config %s invalid: %s" % (path, err))
+    if not configs:
+        report(FAIL, "no site configs in %s" % config_dir)
+
+    sites = [args.site] if args.site else sorted(configs)
+
+    for site in sites:
+        cfg = configs.get(site)
+        if cfg is None:
+            report(FAIL, "no config for requested site %s" % site)
+            continue
+
+        secret = Path(cfg["secret_file"])
+        if secret.is_file():
+            mode = secret.stat().st_mode & 0o777
+            check(
+                mode == 0o400 and secret.stat().st_uid == 0,
+                "secret %s present (mode 0400 root)" % secret,
+                "secret %s mode/owner wrong: mode %o uid %d"
+                % (secret, mode, secret.stat().st_uid),
+            )
+        else:
+            report(FAIL, "secret missing: %s" % secret)
+
+        key = Path(cfg.get("deploy_key", "/etc/7yrds-deploy/ssh/%s_ed25519" % site))
+        if key.is_file():
+            mode = key.stat().st_mode & 0o777
+            check(
+                mode == 0o400,
+                "deploy key %s present (mode 0400)" % key,
+                "deploy key %s mode wrong: %o" % (key, mode),
+            )
+        else:
+            report(FAIL, "deploy key missing: %s" % key)
+
+        known = Path(cfg.get("known_hosts", "/etc/7yrds-deploy/ssh/known_hosts"))
+        check(known.is_file(), "known_hosts present: %s" % known,
+              "known_hosts missing: %s" % known)
+
+        log_dir = Path(cfg["log_dir"])
+        check(log_dir.is_dir(), "log dir present: %s" % log_dir,
+              "log dir missing: %s" % log_dir)
+
+        current = Path(cfg["current_link"])
+        if current.is_symlink():
+            target = Path(os.readlink(current))
+            resolved = current.parent / target if not target.is_absolute() else target
+            check(
+                resolved.is_dir(),
+                "current -> %s (resolves)" % target,
+                "current -> %s does not resolve" % target,
+            )
+            meta = resolved / "RELEASE-METADATA.txt"
+            if meta.is_file():
+                fields = dict(
+                    line.split(":", 1) for line in meta.read_text().splitlines()
+                    if ":" in line
+                )
+                report(
+                    PASS,
+                    "live metadata commit=%s source=%s activation=%s"
+                    % (
+                        fields.get("commit", "?").strip()[:12],
+                        fields.get("source", "?").strip(),
+                        fields.get("activation-utc", "?").strip(),
+                    ),
+                )
+            else:
+                report(FAIL, "live release has no RELEASE-METADATA.txt: %s" % resolved)
+        else:
+            report(WARN, "current symlink not present yet: %s" % current)
+
+    # ---- queue / dedupe ---------------------------------------------------
+    db = Path(args.state_dir) / "queue.db"
+    if db.is_file():
+        try:
+            conn = sqlite3.connect("file:%s?mode=ro" % db, uri=True, timeout=10)
+            queued = conn.execute(
+                "SELECT COUNT(*) FROM queue WHERE status='queued'"
+            ).fetchone()[0]
+            running = conn.execute(
+                "SELECT COUNT(*) FROM queue WHERE status='running'"
+            ).fetchone()[0]
+            failed = conn.execute(
+                "SELECT COUNT(*) FROM queue WHERE status='failed'"
+            ).fetchone()[0]
+            deliveries = conn.execute("SELECT COUNT(*) FROM deliveries").fetchone()[0]
+            conn.close()
+            report(
+                PASS,
+                "queue.db ok (deliveries=%d queued=%d running=%d failed=%d)"
+                % (deliveries, queued, running, failed),
+            )
+        except sqlite3.Error as err:
+            report(FAIL, "queue.db unreadable: %s" % err)
+    else:
+        report(WARN, "queue.db not created yet: %s" % db)
+
+    # ---- service ----------------------------------------------------------
+    if not args.skip_service:
+        show = run(
+            [
+                "systemctl",
+                "show",
+                "-p",
+                "ActiveState,UnitFileState,MemoryHigh,MemoryMax,"
+                "CPUQuotaPerSecUSec,TasksMax,Nice",
+                args.unit,
+            ]
+        )
+        if show is None or show.returncode != 0 or "ActiveState=" not in (show.stdout or ""):
+            report(WARN, "%s unit not queryable (not installed here?)" % args.unit)
+        else:
+            info = dict(
+                line.split("=", 1)
+                for line in show.stdout.strip().splitlines()
+                if "=" in line
+            )
+            cpu_quota_usec = parse_timespan_usec(info.get("CPUQuotaPerSecUSec"))
+            cpu_quota = (
+                "%.4g%%" % (cpu_quota_usec / 1000000.0 * 100)
+                if cpu_quota_usec is not None
+                else info.get("CPUQuotaPerSecUSec", "?")
+            )
+            report(
+                PASS,
+                "unit state=%s enabled=%s MemoryHigh=%s MemoryMax=%s CPUQuota=%s"
+                " TasksMax=%s Nice=%s"
+                % (
+                    info.get("ActiveState", "?"),
+                    info.get("UnitFileState", "?"),
+                    info.get("MemoryHigh", "?"),
+                    info.get("MemoryMax", "?"),
+                    cpu_quota,
+                    info.get("TasksMax", "?"),
+                    info.get("Nice", "?"),
+                ),
+            )
+            check(
+                info.get("MemoryMax") == "805306368"
+                and info.get("MemoryHigh") == "671088640"
+                and cpu_quota_usec == 1000000
+                and info.get("TasksMax") == "256"
+                and info.get("Nice") == "10",
+                "resource limits match design (640M/768M/100%/256/Nice10)",
+                "resource limits do not match design: %s" % info,
+            )
+
+    ss = run(["ss", "-ltnp"])
+    if ss is not None and ss.returncode == 0:
+        lines = [line for line in ss.stdout.splitlines() if "9087" in line]
+        if not lines:
+            report(WARN, "no listener on port 9087 (service stopped?)")
+        for line in lines:
+            local = line.split()[3] if len(line.split()) > 3 else line
+            check(
+                local.startswith("127.0.0.1:9087"),
+                "listener %s is localhost-only" % local,
+                "listener %s is NOT localhost-only" % local,
+            )
+    else:
+        report(WARN, "ss unavailable; cannot verify listener binding")
+
+    # ---- nginx ------------------------------------------------------------
+    nginx = run(["nginx", "-t"])
+    if nginx is not None:
+        check(
+            nginx.returncode == 0,
+            "nginx -t ok",
+            "nginx -t failed: %s" % (nginx.stderr or "").strip(),
+        )
+    else:
+        report(FAIL, "cannot run nginx -t")
+
+    for site in sites:
+        snippet = Path("/etc/nginx/snippets/7yrds-webhook-%s.conf" % site)
+        vhost = Path("/etc/nginx/sites-available/%s.conf" % site)
+        if not snippet.is_file():
+            report(WARN, "snippet not installed: %s" % snippet)
+            continue
+        if not vhost.is_file():
+            report(WARN, "vhost not found: %s" % vhost)
+            continue
+        text = vhost.read_text()
+        include = "snippets/7yrds-webhook-%s.conf" % site
+        count = text.count(include)
+        check(
+            count == 1,
+            "snippet included exactly once in %s" % vhost,
+            "snippet include count in %s is %d (want exactly 1)" % (vhost, count),
+        )
+
+    kill_switch = Path("/etc/7yrds-deploy/DISABLED")
+    report(
+        PASS if not kill_switch.exists() else WARN,
+        "kill switch %s" % ("ACTIVE" if kill_switch.exists() else "not set"),
+    )
+
+    usage = os.statvfs("/")
+    free = usage.f_bavail * usage.f_frsize
+    check(
+        free >= 2 * 1024**3,
+        "disk free on / = %.1f GiB (>= 2 GiB floor)" % (free / 1024**3),
+        "disk free on / = %.1f GiB is below the 2 GiB floor" % (free / 1024**3),
+    )
+
+    fails = results.count(FAIL)
+    warns = results.count(WARN)
+    print(
+        "summary: %d PASS, %d WARN, %d FAIL" % (results.count(PASS), warns, fails),
+        flush=True,
+    )
+    return 1 if fails else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

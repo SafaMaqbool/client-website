@@ -1,0 +1,411 @@
+#!/usr/bin/env python3
+"""Idempotent installer for the 7YRDS deploy webhook pipeline (root only).
+
+Installs the reviewed ``ops/webhook`` sources from the repository working
+tree onto the production host:
+
+  /opt/7yrds-deploy/bin/{receiver.py,deploy-site,healthcheck}
+  /opt/7yrds-deploy/...                     (site map templates)
+  /etc/systemd/system/7yrds-webhook.service
+  /etc/nginx/snippets/7yrds-webhook-<site>.conf
+  /etc/7yrds-deploy/sites.d/<site>.json
+  /etc/7yrds-deploy/secrets/<site>.webhook   (generated once, never printed)
+  /etc/7yrds-deploy/ssh/<site>_ed25519(.pub)
+  /etc/7yrds-deploy/ssh/known_hosts          (pinned Bitbucket ED25519 key)
+  /var/lib/7yrds-deploy/{repos,work}
+  /var/log/7yrds-deploy/<site>
+
+Guarantees: idempotent (content-compared, backups under
+/var/backups/7yrds-deploy/<ts>/ before any replacement), never creates or
+registers Bitbucket objects, never prints a secret value, and never touches
+/opt/deploy/ (deploy.sh / rollback.sh stay byte-identical).
+
+Sandbox: ``install --root <prefix>`` mirrors every path under <prefix> and
+skips system-level actions (user creation, daemon-reload) for tests.
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import hashlib
+import os
+import re
+import secrets as secrets_module
+import shutil
+import stat
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+SOURCE_ROOT = Path(__file__).resolve().parent.parent  # ops/webhook/
+SERVICE_UNIT_NAME = "7yrds-webhook.service"
+SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+EXPECTED_BITBUCKET_ED25519 = "SHA256:ybgmFkzwOSotHTHLJgHO0QN8L0xErw6vd0VhFA9m3SM"
+# Atlassian's published Bitbucket Cloud ED25519 host key (public material);
+# the installer recomputes this line's fingerprint and must match the
+# published value before the line is ever installed.
+BITBUCKET_ED25519_PINNED = (
+    "bitbucket.org ssh-ed25519 "
+    "AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO"
+)
+PROTECTED_PREFIX = "/opt/deploy/"
+
+
+def log(message):
+    print("[install] %s" % message, flush=True)
+
+
+def die(message, code=1):
+    print("[install] ERROR: %s" % message, file=sys.stderr, flush=True)
+    sys.exit(code)
+
+
+def prefixed(root, path):
+    if root in ("", "/"):
+        return Path(path)
+    return Path(root.rstrip("/") + path)
+
+
+def guarded(path):
+    """Refuse anything that could touch the protected legacy tooling."""
+    text = str(path)
+    if text == PROTECTED_PREFIX.rstrip("/") or text.startswith(PROTECTED_PREFIX):
+        die("refusing to touch protected path %s" % text)
+    return path
+
+
+def sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def enforce_mode_owner(path, mode, owner=(0, 0)):
+    """Idempotently re-assert mode/owner; chown only when running as root."""
+    path = Path(path)
+    try:
+        os.chmod(path, mode)
+    except OSError as err:
+        log("WARNING: cannot chmod %s: %s" % (path, err))
+    if os.geteuid() == 0:
+        try:
+            if (path.stat().st_uid, path.stat().st_gid) != owner:
+                os.chown(path, owner[0], owner[1])
+        except OSError as err:
+            log("WARNING: cannot chown %s: %s" % (path, err))
+
+
+def ensure_dir(path, mode=0o755, owner=None):
+    path = guarded(Path(path))
+    created = not path.is_dir()
+    if created:
+        path.mkdir(parents=True, exist_ok=True)
+    before = stat.S_IMODE(path.stat().st_mode)
+    enforce_mode_owner(path, mode, owner or (0, 0))
+    if created:
+        log("created directory %s (mode %o)" % (path, mode))
+    elif before != mode:
+        log("repaired directory %s (mode %o, was %o)" % (path, mode, before))
+    return created or before != mode
+
+
+def install_file(src, dst, mode, backup_root=None):
+    """Content-compared install; backup any replaced file. Never prints contents."""
+    src = Path(src)
+    dst = guarded(Path(dst))
+    data = src.read_bytes()
+    if dst.exists() and sha256(dst) == hashlib.sha256(data).hexdigest():
+        before = stat.S_IMODE(dst.stat().st_mode)
+        enforce_mode_owner(dst, mode)
+        if before != mode:
+            log("unchanged %s (mode repaired %o -> %o)" % (dst, before, mode))
+        else:
+            log("unchanged %s" % dst)
+        return False
+    if dst.exists() and backup_root is not None:
+        backup = Path(backup_root) / str(dst).lstrip("/")
+        backup.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(dst, backup)
+        log("backed up %s -> %s" % (dst, backup))
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    tmp = Path(str(dst) + ".tmp")
+    tmp.write_bytes(data)
+    os.chmod(tmp, mode)
+    os.chown(tmp, 0, 0)
+    os.replace(tmp, dst)
+    log("installed %s (mode %o, sha256 %s)" % (dst, mode, hashlib.sha256(data).hexdigest()[:16]))
+    return True
+
+
+def ensure_build_user(root):
+    if root not in ("", "/"):
+        log("sandbox: skipping yrds-build user creation")
+        return
+    result = subprocess.run(["id", "-u", "yrds-build"], capture_output=True)
+    if result.returncode == 0:
+        log("build user yrds-build already exists")
+    else:
+        subprocess.run(
+            [
+                "useradd",
+                "--system",
+                "--shell",
+                "/usr/sbin/nologin",
+                "--home-dir",
+                "/var/lib/7yrds-deploy",
+                "--comment",
+                "7YRDS deploy build user (no login, no sudo, no credentials)",
+                "yrds-build",
+            ],
+            check=True,
+        )
+        log("created system user yrds-build (nologin)")
+    # Explicitly lock the password and make sure it cannot log in.
+    subprocess.run(["usermod", "-L", "-s", "/usr/sbin/nologin", "yrds-build"], check=True)
+    log("yrds-build locked (no password login, nologin shell)")
+
+
+def ensure_secret(path, label):
+    path = guarded(Path(path))
+    if path.exists():
+        enforce_mode_owner(path, 0o400)
+        log("existing %s kept; owner root, mode 0400 enforced" % label)
+        return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    os.chmod(path.parent, 0o700)
+    value = secrets_module.token_hex(32)
+    tmp = Path(str(path) + ".tmp")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o400)
+    try:
+        os.write(fd, (value + "\n").encode())
+    finally:
+        os.close(fd)
+    os.chown(tmp, 0, 0)
+    os.replace(tmp, path)
+    log("generated %s (value never printed)" % label)
+    return True
+
+
+def ensure_deploy_key(path, site):
+    path = guarded(Path(path))
+    if path.exists():
+        enforce_mode_owner(path, 0o400)
+        pub = Path(str(path) + ".pub")
+        if pub.exists():
+            enforce_mode_owner(pub, 0o644)
+        log("existing deploy key %s kept; owner root, mode 0400 enforced" % path)
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    os.chmod(path.parent, 0o700)
+    subprocess.run(
+        [
+            "ssh-keygen",
+            "-q",
+            "-t",
+            "ed25519",
+            "-N",
+            "",
+            "-C",
+            "7yrds-prod %s read-only deploy" % site,
+            "-f",
+            str(path),
+        ],
+        check=True,
+    )
+    os.chmod(path, 0o400)
+    os.chmod(str(path) + ".pub", 0o644)
+    log("generated deploy keypair %s (private key stays on this host, mode 0400)" % path)
+    log("public key (safe to record/register out-of-band):")
+    print(Path(str(path) + ".pub").read_text().strip(), flush=True)
+
+
+def key_blob_fingerprint(line):
+    """SHA256 fingerprint of an ssh known_hosts / public-key line, or None."""
+    parts = line.split()
+    if len(parts) < 3:
+        return None
+    try:
+        blob = base64.b64decode(parts[-1], validate=True)
+    except ValueError:
+        return None
+    digest = hashlib.sha256(blob).digest()
+    return "SHA256:" + base64.b64encode(digest).decode().rstrip("=")
+
+
+def known_hosts_matches(path, expected_fingerprint):
+    """True when every key in `path` is ed25519 with the pinned fingerprint."""
+    try:
+        lines = path.read_text().splitlines()
+    except OSError:
+        return False
+    seen = 0
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split()
+        if len(parts) < 3 or parts[-2] != "ssh-ed25519":
+            return False
+        if key_blob_fingerprint(line) != expected_fingerprint:
+            return False
+        seen += 1
+    return seen > 0
+
+
+def pinned_known_hosts_text(expected_fingerprint):
+    """Return the embedded pinned known_hosts line after local verification.
+
+    No network: the fingerprint is recomputed from the embedded public key
+    and must equal Atlassian's published value, otherwise the install fails.
+    """
+    fingerprint = key_blob_fingerprint(BITBUCKET_ED25519_PINNED)
+    if fingerprint != expected_fingerprint:
+        die(
+            "pinned Bitbucket ed25519 line fingerprint %s does not match"
+            " expected %s" % (fingerprint, expected_fingerprint)
+        )
+    return BITBUCKET_ED25519_PINNED + "\n"
+
+
+def ensure_known_hosts(path, expected_fingerprint):
+    """Pin known_hosts to the verified Bitbucket ED25519 key.
+
+    An existing file is accepted only when every entry matches the pinned
+    fingerprint; anything else is replaced with the embedded pinned line
+    (replace-or-fail -- never silently trust drift).
+    """
+    path = guarded(Path(path))
+    pinned_line = pinned_known_hosts_text(expected_fingerprint)
+    if path.exists():
+        if known_hosts_matches(path, expected_fingerprint):
+            enforce_mode_owner(path, 0o644)
+            log(
+                "existing %s matches the pinned bitbucket.org ed25519"
+                " fingerprint %s" % (path, expected_fingerprint)
+            )
+            return False
+        log(
+            "existing %s does not match the pinned fingerprint %s; replacing it"
+            % (path, expected_fingerprint)
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = Path(str(path) + ".tmp")
+    tmp.write_text(pinned_line)
+    os.chmod(tmp, 0o644)
+    if os.geteuid() == 0:
+        os.chown(tmp, 0, 0)
+    os.replace(tmp, path)
+    log(
+        "installed %s (pinned bitbucket.org ed25519 fingerprint %s verified)"
+        % (path, expected_fingerprint)
+    )
+    return True
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("sites", nargs="+", help="site slug(s), e.g. bau")
+    parser.add_argument("--root", default="/", help="sandbox prefix (tests only)")
+    parser.add_argument(
+        "--backup-root", default=None, help="backup dir (default /var/backups/7yrds-deploy/<ts>)"
+    )
+    parser.add_argument(
+        "--skip-known-hosts",
+        action="store_true",
+        help="do not install/pin known_hosts (pilot only; deploys fail closed)",
+    )
+    args = parser.parse_args(argv)
+
+    if os.geteuid() != 0:
+        die("install must run as root")
+    root = args.root
+    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    backup_root = args.backup_root or str(prefixed(root, "/var/backups/7yrds-deploy/%s" % stamp))
+
+    for site in args.sites:
+        if not SLUG_RE.match(site):
+            die("invalid site slug: %r" % site)
+        site_map = SOURCE_ROOT / "sites" / ("%s.json" % site)
+        if not site_map.is_file():
+            die("site map not found in repository: %s" % site_map)
+
+    ensure_build_user(root)
+
+    opt_root = prefixed(root, "/opt/7yrds-deploy")
+    ensure_dir(opt_root / "bin", 0o755)
+    for name in ("receiver.py", "deploy-site", "healthcheck"):
+        install_file(
+            SOURCE_ROOT / "bin" / name, opt_root / "bin" / name, 0o755, backup_root
+        )
+
+    ensure_dir(prefixed(root, "/etc/7yrds-deploy"), 0o755)
+    ensure_dir(prefixed(root, "/etc/7yrds-deploy/sites.d"), 0o755)
+    ensure_dir(prefixed(root, "/etc/7yrds-deploy/secrets"), 0o700)
+    ensure_dir(prefixed(root, "/etc/7yrds-deploy/ssh"), 0o700)
+    ensure_dir(prefixed(root, "/var/lib/7yrds-deploy"), 0o755)
+    ensure_dir(prefixed(root, "/var/lib/7yrds-deploy/repos"), 0o755)
+    ensure_dir(prefixed(root, "/var/lib/7yrds-deploy/work"), 0o755)
+
+    unit_changed = install_file(
+        SOURCE_ROOT / "systemd" / SERVICE_UNIT_NAME,
+        prefixed(root, "/etc/systemd/system/%s" % SERVICE_UNIT_NAME),
+        0o644,
+        backup_root,
+    )
+    if unit_changed and root in ("", "/"):
+        result = subprocess.run(["systemctl", "daemon-reload"], capture_output=True)
+        if result.returncode != 0:
+            log("WARNING: systemctl daemon-reload failed: %s" % result.stderr.decode().strip())
+        else:
+            log("systemd daemon-reload done")
+
+    for site in args.sites:
+        ensure_dir(prefixed(root, "/var/log/7yrds-deploy/%s" % site), 0o755)
+        install_file(
+            SOURCE_ROOT / "sites" / ("%s.json" % site),
+            prefixed(root, "/etc/7yrds-deploy/sites.d/%s.json" % site),
+            0o644,
+            backup_root,
+        )
+        snippet = SOURCE_ROOT / "nginx" / ("%s-webhook.conf" % site)
+        if snippet.is_file():
+            install_file(
+                snippet,
+                prefixed(root, "/etc/nginx/snippets/7yrds-webhook-%s.conf" % site),
+                0o644,
+                backup_root,
+            )
+        else:
+            log("NOTE: no nginx snippet in repo for site %s; skipping" % site)
+        ensure_secret(
+            prefixed(root, "/etc/7yrds-deploy/secrets/%s.webhook" % site),
+            "webhook secret %s" % site,
+        )
+        ensure_deploy_key(
+            prefixed(root, "/etc/7yrds-deploy/ssh/%s_ed25519" % site), site
+        )
+
+    if args.skip_known_hosts:
+        log("known_hosts seeding skipped (--skip-known-hosts)")
+    else:
+        ensure_known_hosts(
+            prefixed(root, "/etc/7yrds-deploy/ssh/known_hosts"),
+            EXPECTED_BITBUCKET_ED25519,
+        )
+
+    log("install complete for site(s): %s" % ", ".join(args.sites))
+    log("NOT done by this installer (deliberate):")
+    log("  - no Bitbucket webhook/deploy-key registration (separate approved step)")
+    log("  - no nginx vhost edit: include /etc/nginx/snippets/7yrds-webhook-<site>.conf")
+    log("    inside the site TLS server block, then nginx -t && nginx -s reload")
+    log("  - no service start: systemctl enable --now %s (after secrets/keys exist)" % SERVICE_UNIT_NAME)
+    log("run /opt/7yrds-deploy/bin/healthcheck for a non-secret state report")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
