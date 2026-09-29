@@ -5,9 +5,14 @@ import CornerGrid from "../components/CornerGrid.astro";
 import Button from "../components/Button.astro";
 import { groupCompanies, site } from "../data/site";
 import logo from "../assets/images/logo-7yrds-bau.jpg";
+import arrowIcon from "../assets/icons/arrow-up-right-circle.svg";
 
-const columnSize = Math.ceil(groupCompanies.length / 3);
-const companyColumns = [0, 1, 2].map((i) => groupCompanies.slice(i * columnSize, (i + 1) * columnSize));
+// Spaltenaufteilung wie im Figma-Design (Node 135:4104)
+const companyColumns = [
+  ["7YRDS Real Estate", "7YRDS Energy", "7YRDS Decon Service", "Cyclontec"],
+  ["7YRDS", "7YRDS XXL Garagen", "7YRDS Consulting", "7YRDS Protect"],
+  ["7YRDS Consulting", "7YRDS Service", "7YRDS"],
+].map((column) => column.map((label) => groupCompanies.find((c) => c.label === label)!));
 ---
 <Layout title="Kontakt | Bauunternehmen Goch, NRW" description="Kontaktieren Sie uns für Ihr nächstes Bauprojekt.">
   <!-- Hero -->
@@ -132,34 +137,30 @@ const companyColumns = [0, 1, 2].map((i) => groupCompanies.slice(i * columnSize,
   </section>
 
   <!-- 7YRDS Gruppe -->
-  <section class="bg-white border-y border-sand flex flex-col gap-8 items-center justify-center p-6 md:p-15 w-full">
+  <section class="bg-white border-y border-sand flex flex-col gap-8 items-start justify-center px-6 py-12 md:p-15 w-full">
     <div class="flex flex-col gap-4 items-start w-full">
       <div class="flex gap-2.5 items-center">
         <span class="bg-accent size-1.5 shrink-0"></span>
-        <p class="font-medium text-ink text-sm leading-none">7YRDS Group</p>
+        <p class="font-medium text-[#171b1f] text-sm leading-none">7YRDS Group</p>
       </div>
-      <h2 class="font-display text-ink text-[32px] md:text-[40px] tracking-[-1.6px] leading-[1.1]">Weitere Unternehmen aus der 7YRDS Gruppe</h2>
+      <h2 class="font-display text-[#171b1f] text-[32px] md:text-[40px] tracking-[-1.6px] leading-[1.1] md:leading-[1.25]">Weitere Unternehmen aus der 7YRDS Gruppe</h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-wrap gap-3 xl:gap-x-12.5 items-start w-full">
+    <div class="flex flex-col md:flex-row md:flex-wrap gap-3 md:gap-x-12.5 md:gap-y-3 items-start w-full">
       {companyColumns.map((column) => (
-        <div class="contents xl:flex xl:flex-col xl:gap-3 xl:items-start">
+        <div class="flex flex-col gap-3 items-start max-w-full">
           {column.map((c) => (
             <a
               href={c.href}
               target="_blank"
               rel="noopener noreferrer"
-              class="group bg-[#e4efff] flex gap-6 items-center justify-between px-3.5 py-2.5 rounded-2xl max-w-full hover:bg-[#d6e5fc] transition-colors"
+              class="bg-[#e4efff] flex gap-6 items-center px-3.5 py-2.5 rounded-2xl max-w-full hover:bg-[#d6e5fc] transition-colors"
             >
-              <span class="flex flex-wrap xl:flex-nowrap xl:whitespace-nowrap gap-x-2 gap-y-1 items-center min-w-0">
-                <span class="font-normal text-ink text-sm tracking-[-0.56px]">{c.label}</span>
-                <span class="font-semibold text-accent text-sm tracking-[-0.28px] underline underline-offset-4 break-all">{c.domain}</span>
+              <span class="flex flex-wrap sm:flex-nowrap gap-x-2 gap-y-1 items-center min-w-0">
+                <span class="font-normal text-ink text-sm leading-[1.2] tracking-[-0.56px] sm:whitespace-nowrap">{c.label}</span>
+                <span class="font-semibold text-accent text-sm leading-none tracking-[-0.28px] underline underline-offset-2 whitespace-nowrap">{c.domain}</span>
               </span>
-              <span class="flex items-center justify-center rounded-full border-[1.5px] border-ink size-6 shrink-0">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M7 17L17 7M17 7H9M17 7V15" stroke="#1D1B24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </span>
+              <img src={arrowIcon.src} width={arrowIcon.width} height={arrowIcon.height} alt="" class="shrink-0 size-[24.248px]" />
             </a>
           ))}
         </div>
