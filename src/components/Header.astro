@@ -1,5 +1,7 @@
 ---
+import { Image } from "astro:assets";
 import { navItems } from "../data/site";
+import logo from "../assets/images/logo-7yrds-bau.jpg";
 
 const currentPath = Astro.url.pathname;
 const isActiveLink = (href: string) => {
@@ -12,7 +14,9 @@ const isActiveLink = (href: string) => {
   <input type="checkbox" id="mobile-nav-toggle" class="peer hidden" />
 
   <div class="flex items-center justify-between w-full gap-4 h-16 md:h-20 peer-checked:[&_.icon-open]:hidden peer-checked:[&_.icon-close]:block">
-    <a href="/" class="bg-ink h-8 w-27 md:h-9.5 md:w-31.75 shrink-0" aria-label="Zur Startseite" title="Zur Startseite"></a>
+    <a href="/" class="shrink-0" aria-label="Zur Startseite" title="Zur Startseite">
+      <Image src={logo} alt="7YRDS Bau" class="h-9 md:h-11.25 w-auto" loading="eager" widths={[240, 480]} sizes="101px" />
+    </a>
 
     <nav aria-label="Hauptnavigation" class="hidden xl:flex items-center justify-center flex-1">
       <div class="flex gap-8 items-center px-10">

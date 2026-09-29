@@ -1,16 +1,13 @@
 ---
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
 import CornerGrid from "../components/CornerGrid.astro";
 import Button from "../components/Button.astro";
-import { site } from "../data/site";
+import { groupCompanies, site } from "../data/site";
+import logo from "../assets/images/logo-7yrds-bau.jpg";
 
-const [addressLine1, addressLine2] = site.address.split(", ");
-
-const placeholderLinks = [
-  ["Text", "Text", "Text", "Text"],
-  ["Text", "Text", "Text", "Text"],
-  ["Text", "Text", "Text"],
-];
+const columnSize = Math.ceil(groupCompanies.length / 3);
+const companyColumns = [0, 1, 2].map((i) => groupCompanies.slice(i * columnSize, (i + 1) * columnSize));
 ---
 <Layout title="Kontakt | Bauunternehmen Goch, NRW" description="Kontaktieren Sie uns für Ihr nächstes Bauprojekt.">
   <!-- Hero -->
@@ -34,16 +31,17 @@ const placeholderLinks = [
           <p class="font-medium text-ink text-sm leading-none">Kontaktinformationen</p>
         </div>
 
-        <!-- logo -->
-         <a href="/" class="bg-ink h-20.25 w-full max-w-67.25 shrink-0" aria-label="Zur Startseite" title="Zur Startseite"></a>
+        <a href="/" class="shrink-0" aria-label="Zur Startseite" title="Zur Startseite">
+          <Image src={logo} alt="7YRDS Bau" class="h-20.25 w-auto" loading="eager" widths={[240, 480]} sizes="182px" />
+        </a>
 
 
         <div class="flex flex-col gap-4.5 items-start w-full">
           <div class="flex flex-col gap-3 items-start w-full">
             <p class="font-normal text-muted text-base tracking-[-0.64px] uppercase">Adresse</p>
             <div class="flex flex-col gap-1.5 items-start w-full">
-              <h2 class="font-semibold text-ink text-lg tracking-[-0.36px]">{addressLine1}</h2>
-              <h2 class="font-semibold text-ink text-lg tracking-[-0.36px]">{addressLine2}</h2>
+              <h2 class="font-semibold text-ink text-lg tracking-[-0.36px]">{site.legalName}</h2>
+              <h2 class="font-semibold text-ink text-lg leading-none tracking-[-0.36px]">{site.street}<br />{site.city}</h2>
             </div>
           </div>
           <div class="flex flex-col gap-3 items-start w-full">
@@ -66,8 +64,9 @@ const placeholderLinks = [
         <div class="flex flex-col gap-5 items-start w-full text-lg text-ink">
           <h2 class="font-semibold leading-none tracking-[-0.36px]">Rechtliche Informationen</h2>
           <div class="flex flex-col gap-2 items-start w-full font-normal leading-[1.2] tracking-[-0.72px]">
-            <span class="underline underline-offset-4">Impressum</span>
-            <span class="underline underline-offset-4">Datenschutz</span>
+            <p>USt.-IdNr. {site.vatId}</p>
+            <p>{site.court} · {site.hrb}</p>
+            <p>Präqualifizierung Nr. {site.prequalification}</p>
           </div>
         </div>
       </div>
@@ -132,31 +131,36 @@ const placeholderLinks = [
     </form>
   </section>
 
-  <!-- Platzhalter-Bereich (Inhalte aus Figma noch nicht final) -->
+  <!-- 7YRDS Gruppe -->
   <section class="bg-white border-y border-sand flex flex-col gap-8 items-center justify-center p-6 md:p-15 w-full">
     <div class="flex flex-col gap-4 items-start w-full">
       <div class="flex gap-2.5 items-center">
         <span class="bg-accent size-1.5 shrink-0"></span>
-        <p class="font-medium text-ink text-sm leading-none">Tag</p>
+        <p class="font-medium text-ink text-sm leading-none">7YRDS Group</p>
       </div>
-      <h2 class="font-display text-ink text-[32px] md:text-[40px] tracking-[-1.6px]">Headline</h2>
+      <h2 class="font-display text-ink text-[32px] md:text-[40px] tracking-[-1.6px] leading-[1.1]">Weitere Unternehmen aus der 7YRDS Gruppe</h2>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-5 md:gap-12.5 items-start w-full">
-      {placeholderLinks.map((column) => (
-        <div class="flex flex-col gap-3 items-start w-full sm:w-33.5">
-          {column.map((label) => (
-            <div class="bg-[#e4efff] flex gap-6 items-center justify-between px-3.5 py-2.5 rounded-2xl shrink-0 w-full">
-              <div class="flex gap-2 items-center">
-                <span class="font-normal text-ink text-sm tracking-[-0.56px]">{label}</span>
-                <span class="font-semibold text-accent text-sm tracking-[-0.28px] underline underline-offset-4">Link</span>
-              </div>
-              <span class="flex items-center justify-center rounded-full border border-ink/60 size-6 shrink-0">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:flex xl:flex-wrap gap-3 xl:gap-x-12.5 items-start w-full">
+      {companyColumns.map((column) => (
+        <div class="contents xl:flex xl:flex-col xl:gap-3 xl:items-start">
+          {column.map((c) => (
+            <a
+              href={c.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group bg-[#e4efff] flex gap-6 items-center justify-between px-3.5 py-2.5 rounded-2xl max-w-full hover:bg-[#d6e5fc] transition-colors"
+            >
+              <span class="flex flex-wrap xl:flex-nowrap xl:whitespace-nowrap gap-x-2 gap-y-1 items-center min-w-0">
+                <span class="font-normal text-ink text-sm tracking-[-0.56px]">{c.label}</span>
+                <span class="font-semibold text-accent text-sm tracking-[-0.28px] underline underline-offset-4 break-all">{c.domain}</span>
+              </span>
+              <span class="flex items-center justify-center rounded-full border-[1.5px] border-ink size-6 shrink-0">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M7 17L17 7M17 7H9M17 7V15" stroke="#1D1B24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M7 17L17 7M17 7H9M17 7V15" stroke="#1D1B24" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
               </span>
-            </div>
+            </a>
           ))}
         </div>
       ))}
