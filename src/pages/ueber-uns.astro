@@ -45,7 +45,7 @@ const revenue = [
       <div class:list={["flex flex-col gap-1 justify-center py-4 lg:py-0 min-w-0", i % 2 === 1 && "border-l border-skyblueLine/50 pl-5 lg:pl-7.5", i === 2 && "lg:border-l border-skyblueLine/50 lg:pl-7.5"]}>
         <h2 class="font-bold text-black text-[28px] md:text-[32px] leading-normal">{s.value}</h2>
         <div class="flex items-start gap-1">
-          <p class="font-normal text-black text-sm sm:text-base min-w-0 break-words hyphens-auto">{s.label}</p>
+          <p class="font-normal text-black text-sm sm:text-base min-w-0 wrap-break-word hyphens-auto">{s.label}</p>
           {s.trend && (
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true">
               <path d="M7 17L17 7M17 7H9M17 7V15" stroke="#1D1B24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
