@@ -1,0 +1,21 @@
+{
+  "site": "bau",
+  "endpoint": "/__deploy/hooks/bitbucket/bau",
+  "repo_full_name": "uhpsoftware/7yrds-bau",
+  "repo_url": "git@bitbucket.org:uhpsoftware/7yrds-bau.git",
+  "branch": "main",
+  "secret_file": "/etc/7yrds-deploy/secrets/bau.webhook",
+  "deploy_key": "/etc/7yrds-deploy/ssh/bau_ed25519",
+  "known_hosts": "/etc/7yrds-deploy/ssh/known_hosts",
+  "bitbucket_host_key_sha256": "SHA256:ybgmFkzwOSotHTHLJgHO0QN8L0xErw6vd0VhFA9m3SM",
+  "state_dir": "/var/lib/7yrds-deploy",
+  "releases_dir": "/var/www/bau/releases",
+  "current_link": "/var/www/bau/current",
+  "compat_metadata": "/var/www/bau/RELEASE-METADATA.txt",
+  "log_dir": "/var/log/7yrds-deploy/bau",
+  "lock_file": "/run/lock/7yrds-deploy-bau.lock",
+  "deploy_command": "/opt/7yrds-deploy/bin/deploy-site",
+  "build_user": "yrds-build",
+  "web_url": "https://7yards-bau.uhp-software.com/",
+  "kill_switch": "/etc/7yrds-deploy/DISABLED"
+}

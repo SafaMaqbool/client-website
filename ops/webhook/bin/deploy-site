@@ -1,0 +1,799 @@
+#!/usr/bin/env python3
+"""Root-only exact-commit build and activation pipeline for 7YRDS sites.
+
+Binding design: /opt/data/wf/t_7ccb4522/design.md (TRIAGE-7).
+
+Fetches the pushed commit from Bitbucket with the root-only deploy key,
+builds it unprivileged as the locked ``yrds-build`` user, creates an
+immutable release outside /var/www, validates it with ``nginx -t``, swaps
+the ``current`` symlink atomically and proves the swap with a local-TLS
+smoke check that compares response-body hashes.  Any post-swap failure
+restores the previous symlink automatically.
+
+Break glass:  deploy-site --site bau --commit <40-sha> --source manual
+Test modes:   --source manual-test --build-only | --simulate-build-failure
+              (root only; refused for webhook and for break-glass manual)
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import io
+import json
+import logging
+import os
+import pwd
+import re
+import resource
+import shutil
+import subprocess
+import sys
+import tarfile
+import time
+import uuid
+from datetime import datetime, timezone
+from pathlib import Path
+from urllib.parse import urlparse
+
+EXIT_OK = 0
+EXIT_USAGE = 2
+EXIT_FETCH = 3
+EXIT_BUILD = 4
+EXIT_PRE_ACTIVATION = 5
+EXIT_POST_SWAP = 6
+EXIT_RELOAD = 7
+
+SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+TS_RE = re.compile(r"^[0-9]{8}T[0-9]{6}Z$")
+RUN_ID_RE = re.compile(r"^[A-Za-z0-9._-]{1,64}$")
+
+BUILD_TIMEOUT_SECONDS = 15 * 60
+FETCH_TIMEOUT_SECONDS = 180
+DISK_FLOOR_BYTES = 2 * 1024**3  # 2 GiB
+STALE_WORK_HOURS = 72
+KEEP_RELEASES = 3
+# Traverse-only mode for the state/work chain (state dir, work, work/<site>):
+# the unprivileged build user must reach its workspace through it while the
+# directories stay root-owned and unwritable.
+WORK_TRAVERSAL_MODE = 0o711
+COMPAT_REFRESH_ATTEMPTS = 3
+SOURCE_LABELS = {
+    "webhook": "bitbucket-webhook",
+    "manual": "manual",
+    "manual-test": "manual-test",
+}
+
+LOG = logging.getLogger("deploy-site")
+
+
+class PipelineError(RuntimeError):
+    def __init__(self, exit_code, message):
+        super().__init__(message)
+        self.exit_code = exit_code
+
+
+def utcnow():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def utc_stamp():
+    return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def valid_run_id(value) -> bool:
+    """True only for a bounded, filename-safe run id (never '.' or '..')."""
+    if not isinstance(value, str) or not RUN_ID_RE.match(value):
+        return False
+    return value not in (".", "..")
+
+
+def setup_logging(log_dir, run_id):
+    LOG.setLevel(logging.INFO)
+    fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+    stream = logging.StreamHandler(sys.stdout)
+    stream.setFormatter(fmt)
+    LOG.addHandler(stream)
+    log_dir = Path(log_dir)
+    log_dir.mkdir(parents=True, exist_ok=True)
+    handler = logging.FileHandler(log_dir / ("%s.log" % run_id))
+    handler.setFormatter(fmt)
+    LOG.addHandler(handler)
+
+
+def read_meminfo():
+    info = {}
+    try:
+        for line in Path("/proc/meminfo").read_text().splitlines():
+            key, _, value = line.partition(":")
+            info[key.strip()] = value.strip()
+    except OSError:
+        pass
+    return info
+
+
+def sha256_file(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def write_file_atomic(path, data, mode=0o644):
+    path = Path(path)
+    tmp = Path(str(path) + ".tmp")
+    with open(tmp, "w", encoding="utf-8") as handle:
+        handle.write(data)
+    os.chmod(tmp, mode)
+    os.replace(tmp, path)
+
+
+class Pipeline:
+    def __init__(self, cfg, args, run_id, work_dir):
+        self.cfg = cfg
+        self.args = args
+        self.run_id = run_id
+        self.site = cfg["site"]
+        self.commit = args.commit
+        self.source = args.source
+        self.bare = Path(cfg["state_dir"]) / "repos" / ("%s.git" % self.site)
+        self.work_root = Path(cfg["state_dir"]) / "work" / self.site
+        self.work_dir = work_dir
+        self.src = work_dir / "src"
+        self.releases_dir = Path(cfg["releases_dir"])
+        self.current_link = Path(cfg["current_link"])
+        self.previous_target = None
+        self.uid = None
+        self.gid = None
+        self.build_user = cfg.get("build_user", "yrds-build")
+
+    # ---- low-level helpers ----------------------------------------------
+    def run_cmd(self, argv, exit_code, timeout, env=None, cwd=None, binary=False):
+        LOG.info("exec: %s", " ".join(str(a) for a in argv))
+        try:
+            proc = subprocess.run(
+                [str(a) for a in argv],
+                timeout=timeout,
+                env=env,
+                cwd=str(cwd) if cwd else None,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=not binary,
+            )
+        except subprocess.TimeoutExpired:
+            raise PipelineError(exit_code, "timeout after %ss: %s" % (timeout, argv[0]))
+        except OSError as err:
+            raise PipelineError(exit_code, "cannot run %s: %s" % (argv[0], err))
+        if proc.returncode != 0:
+            output = proc.stdout or b"" if binary else proc.stdout or ""
+            if binary:
+                tail = "\n".join(output.decode("utf-8", "replace").splitlines()[-8:])
+            else:
+                tail = "\n".join(output.splitlines()[-8:])
+            raise PipelineError(
+                exit_code, "%s exited %d\n%s" % (argv[0], proc.returncode, tail)
+            )
+        return proc
+
+    def git(self, argv, timeout=FETCH_TIMEOUT_SECONDS):
+        env = dict(os.environ)
+        env["GIT_TERMINAL_PROMPT"] = "0"
+        env["GIT_CONFIG_NOSYSTEM"] = "1"
+        env["HOME"] = str(self.cfg["state_dir"])
+        env["GIT_SSH_COMMAND"] = (
+            "ssh -i %s -o IdentitiesOnly=yes -o BatchMode=yes"
+            " -o UserKnownHostsFile=%s -o StrictHostKeyChecking=yes"
+            % (self.cfg["deploy_key"], self.cfg["known_hosts"])
+        )
+        return self.run_cmd(["git", "-C", self.bare, *argv], EXIT_FETCH, timeout, env=env)
+
+    def _chown_tree(self, root, uid, gid):
+        os.chown(root, uid, gid)
+        for dirpath, dirnames, filenames in os.walk(root):
+            for name in dirnames + filenames:
+                path = os.path.join(dirpath, name)
+                if not os.path.islink(path):
+                    os.chown(path, uid, gid)
+
+    # ---- phases ----------------------------------------------------------
+    def preflight(self):
+        usage = shutil.disk_usage("/")
+        mem = read_meminfo()
+        self.log_measure("preflight", usage.free, mem)
+        if usage.free < DISK_FLOOR_BYTES:
+            raise PipelineError(
+                EXIT_PRE_ACTIVATION,
+                "disk preflight failed: %d bytes free on / (need >= %d)"
+                % (usage.free, DISK_FLOOR_BYTES),
+            )
+
+    def log_measure(self, label, disk_free, mem, **extra):
+        LOG.info(
+            "measure label=%s disk_free_bytes=%s mem_available=%s"
+            " swap_total_kb=%s swap_free_kb=%s%s",
+            label,
+            disk_free,
+            mem.get("MemAvailable", "unknown"),
+            mem.get("SwapTotal", "unknown"),
+            mem.get("SwapFree", "unknown"),
+            "".join(" %s=%s" % (k, v) for k, v in extra.items()),
+        )
+
+    def live_release(self):
+        """Path of the release directory the `current` symlink points at."""
+        try:
+            target = os.readlink(self.current_link)
+        except OSError:
+            return None
+        release = Path(target)
+        if not release.is_absolute():
+            release = self.current_link.parent / target
+        return release
+
+    def live_commit(self):
+        """Full SHA of the currently live release, or None."""
+        release = self.live_release()
+        if release is None:
+            return None
+        metadata = release / "RELEASE-METADATA.txt"
+        if not metadata.is_file():
+            return None
+        for line in metadata.read_text().splitlines():
+            key, _, value = line.partition(":")
+            if key.strip() == "commit":
+                return value.strip()
+        return None
+
+    def compat_metadata_matches(self, release):
+        """True when the compatibility record equals the release metadata."""
+        try:
+            current = Path(self.cfg["compat_metadata"]).read_text()
+        except OSError:
+            return False
+        try:
+            expected = (release / "RELEASE-METADATA.txt").read_text()
+        except OSError:
+            return False
+        return current == expected
+
+    def repair_compat_metadata_if_stale(self, release):
+        """Rewrite a stale/missing compatibility record for a live release.
+
+        Returns True when a repair was written.  A record that is stale but
+        cannot be repaired is a post-swap failure (exit 6) -- the verified
+        release stays live and a later retry repairs it.
+        """
+        if release is None or not release.is_dir():
+            return False
+        meta = release / "RELEASE-METADATA.txt"
+        if not meta.is_file():
+            return False
+        if self.compat_metadata_matches(release):
+            return False
+        try:
+            write_file_atomic(self.cfg["compat_metadata"], meta.read_text(), 0o644)
+        except (OSError, ValueError) as err:
+            raise PipelineError(
+                EXIT_POST_SWAP,
+                "cannot repair stale compatibility metadata %s: %s"
+                % (self.cfg["compat_metadata"], err),
+            )
+        LOG.warning(
+            "noop: compatibility record was stale or missing; repaired from %s",
+            release,
+        )
+        return True
+
+    def fetch(self):
+        self.bare.parent.mkdir(parents=True, exist_ok=True)
+        if not (self.bare / "HEAD").exists():
+            self.run_cmd(
+                ["git", "init", "--bare", str(self.bare)], EXIT_FETCH, 60
+            )
+        branch = self.cfg["branch"]
+        self.git(
+            [
+                "fetch",
+                "--prune",
+                "--no-tags",
+                self.cfg["repo_url"],
+                "+refs/heads/%s:refs/heads/%s" % (branch, branch),
+            ]
+        )
+        head = self.git(["rev-parse", "refs/heads/%s" % branch], timeout=60)
+        LOG.info("fetched %s at %s", branch, head.stdout.strip())
+        # exact-commit validation: the payload SHA must be a commit on main
+        self.git(["cat-file", "-e", "%s^{commit}" % self.commit], timeout=60)
+        self.git(
+            ["merge-base", "--is-ancestor", self.commit, "refs/heads/%s" % branch],
+            timeout=60,
+        )
+        LOG.info("commit %s validated as a commit on %s", self.commit, branch)
+
+    def extract(self):
+        archive = self.run_cmd(
+            ["git", "-C", self.bare, "archive", "--format=tar", self.commit],
+            EXIT_FETCH,
+            300,
+            env={**os.environ, "GIT_TERMINAL_PROMPT": "0"},
+            binary=True,
+        )
+        # Defense in depth: the disposable workspace must sit strictly under
+        # the per-site work root before anything is removed or created.
+        if self.work_dir.resolve().parent != self.work_root.resolve():
+            raise PipelineError(
+                EXIT_USAGE, "refusing unsafe work dir: %s" % self.work_dir
+            )
+        if self.work_dir.exists():
+            shutil.rmtree(self.work_dir)
+        self.src.mkdir(parents=True)
+        with tarfile.open(fileobj=io.BytesIO(archive.stdout), mode="r:") as tar:
+            tar.extractall(path=self.src, filter="data")
+        self._chown_tree(self.src, self.uid, self.gid)
+        LOG.info("extracted %s into %s", self.commit, self.src)
+
+    def build(self):
+        env = dict(os.environ)
+        home = self.work_dir / "home"
+        cache = self.work_dir / "npm-cache"
+        home.mkdir(exist_ok=True)
+        cache.mkdir(exist_ok=True)
+        self._chown_tree(self.work_dir, self.uid, self.gid)
+        env.update(
+            {
+                "CI": "1",
+                "NODE_OPTIONS": "--max-old-space-size=512",
+                "HOME": str(home),
+                "npm_config_cache": str(cache),
+                "npm_config_update_notifier": "false",
+            }
+        )
+        prefix = [
+            "runuser",
+            "-u",
+            self.build_user,
+            "--",
+            "env",
+            "HOME=%s" % home,
+            "npm_config_cache=%s" % cache,
+            "CI=1",
+            "NODE_OPTIONS=--max-old-space-size=512",
+        ]
+        if self.args.simulate_build_failure:
+            LOG.warning(
+                "simulate-build-failure: substituting a failing build step"
+                " in the disposable workspace"
+            )
+            build_steps = [
+                prefix + ["/bin/sh", "-c", "echo simulated build failure >&2; exit 42"]
+            ]
+        else:
+            build_steps = [
+                prefix + ["npm", "ci", "--no-audit", "--no-fund"],
+                prefix + ["npm", "run", "build"],
+            ]
+        deadline = time.monotonic() + BUILD_TIMEOUT_SECONDS
+        started = time.monotonic()
+        for step in build_steps:
+            remaining = deadline - time.monotonic()
+            if remaining <= 1:
+                raise PipelineError(EXIT_BUILD, "15-minute build budget exhausted")
+            self.run_cmd(step, EXIT_BUILD, remaining, env=env, cwd=self.src)
+        elapsed = time.monotonic() - started
+        peak_rss_kb = resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss
+        usage = shutil.disk_usage("/")
+        self.log_measure(
+            "build",
+            usage.free,
+            read_meminfo(),
+            build_seconds="%.1f" % elapsed,
+            build_peak_rss_kb=str(peak_rss_kb),
+        )
+        index = self.src / "dist" / "index.html"
+        if not index.is_file() or index.stat().st_size == 0:
+            raise PipelineError(EXIT_BUILD, "build produced no non-empty dist/index.html")
+        LOG.info("build ok: dist/index.html %d bytes", index.stat().st_size)
+
+    def create_release(self):
+        for _ in range(5):
+            stamp = utc_stamp()
+            release = self.releases_dir / stamp
+            try:
+                release.mkdir(parents=True)
+                break
+            except FileExistsError:
+                time.sleep(1)
+        else:
+            raise PipelineError(EXIT_PRE_ACTIVATION, "cannot allocate release name")
+        shutil.copytree(self.src / "dist", release, dirs_exist_ok=True, symlinks=True)
+        os.chown(release, 0, 0)
+        os.chmod(release, 0o755)
+        for dirpath, dirnames, filenames in os.walk(release):
+            for name in dirnames:
+                path = os.path.join(dirpath, name)
+                if not os.path.islink(path):
+                    os.chown(path, 0, 0)
+                    os.chmod(path, 0o755)
+            for name in filenames:
+                path = os.path.join(dirpath, name)
+                if not os.path.islink(path):
+                    os.chown(path, 0, 0)
+                    os.chmod(path, 0o644)
+        LOG.info("release populated: %s", release)
+        return release
+
+    def write_metadata(self, release, build_utc):
+        text = "\n".join(
+            [
+                "site: %s" % self.site,
+                "commit: %s" % self.commit,
+                "branch: %s" % self.cfg["branch"],
+                "source: %s" % SOURCE_LABELS[self.source],
+                "request-uuid: %s" % self.run_id,
+                "run-id: %s" % self.run_id,
+                "build-utc: %s" % build_utc,
+                "activation-utc: %s" % utcnow(),
+                "pipeline: 7yrds-deploy deploy-site",
+                "",
+            ]
+        )
+        path = release / "RELEASE-METADATA.txt"
+        write_file_atomic(path, text, 0o644)
+
+    def nginx_test(self, exit_code=EXIT_PRE_ACTIVATION):
+        self.run_cmd(["nginx", "-t"], exit_code, 30)
+
+    def smoke_check(self, release):
+        web_url = self.cfg["web_url"]
+        host = urlparse(web_url).hostname
+        body = self.work_dir / "smoke-body"
+        proc = self.run_cmd(
+            [
+                "curl",
+                "-sS",
+                "-o",
+                str(body),
+                "-w",
+                "%{http_code}",
+                "--connect-timeout",
+                "5",
+                "--max-time",
+                "15",
+                "--resolve",
+                "%s:443:127.0.0.1" % host,
+                web_url,
+            ],
+            EXIT_POST_SWAP,
+            30,
+        )
+        status = proc.stdout.strip()
+        if status != "200":
+            raise PipelineError(
+                EXIT_POST_SWAP, "smoke check returned HTTP %s (want 200)" % status
+            )
+        want = sha256_file(release / "index.html")
+        got = sha256_file(body)
+        if want != got:
+            raise PipelineError(
+                EXIT_POST_SWAP,
+                "smoke body hash mismatch: release=%s live=%s" % (want[:16], got[:16]),
+            )
+        LOG.info("smoke ok: HTTP 200, body sha256 %s", got[:16])
+
+    def activate(self, release):
+        try:
+            self.previous_target = os.readlink(self.current_link)
+        except OSError:
+            self.previous_target = None
+        LOG.info("previous current -> %s", self.previous_target)
+        tmp = Path(str(self.current_link) + ".tmp")
+        if tmp.is_symlink() or tmp.exists():
+            tmp.unlink()
+        os.symlink("releases/%s" % release.name, tmp)
+        os.rename(tmp, self.current_link)
+        LOG.info("activated %s (atomic rename)", release)
+
+    def restore_previous(self, reason):
+        LOG.error("rolling back current symlink: %s", reason)
+        tmp = Path(str(self.current_link) + ".tmp")
+        try:
+            if self.previous_target is not None:
+                if tmp.is_symlink() or tmp.exists():
+                    tmp.unlink()
+                os.symlink(self.previous_target, tmp)
+                os.rename(tmp, self.current_link)
+                LOG.error("restored current -> %s", self.previous_target)
+            elif os.path.islink(self.current_link):
+                os.unlink(self.current_link)
+                LOG.error("removed current (no previous release existed)")
+        except OSError as err:
+            LOG.critical("could not restore the previous symlink: %s", err)
+            raise PipelineError(
+                EXIT_POST_SWAP,
+                "current symlink restore failed: %s (original failure: %s)"
+                % (err, reason),
+            )
+        try:
+            self.run_cmd(["nginx", "-t"], EXIT_PRE_ACTIVATION, 30)
+        except PipelineError as err:
+            LOG.error("post-rollback nginx -t: %s", err)
+
+    def reload_nginx(self):
+        self.run_cmd(["nginx", "-s", "reload"], EXIT_RELOAD, 30)
+
+    def refresh_compat_metadata(self, release):
+        try:
+            text = (release / "RELEASE-METADATA.txt").read_text()
+        except OSError as err:
+            raise PipelineError(EXIT_POST_SWAP, "release metadata unreadable: %s" % err)
+        last = None
+        for attempt in range(1, COMPAT_REFRESH_ATTEMPTS + 1):
+            try:
+                write_file_atomic(self.cfg["compat_metadata"], text, 0o644)
+            except (OSError, ValueError) as err:
+                last = err
+                LOG.error(
+                    "compatibility record refresh attempt %d/%d failed: %s",
+                    attempt,
+                    COMPAT_REFRESH_ATTEMPTS,
+                    err,
+                )
+                if attempt < COMPAT_REFRESH_ATTEMPTS:
+                    time.sleep(0.5)
+                continue
+            LOG.info("compatibility record refreshed: %s", self.cfg["compat_metadata"])
+            return
+        raise PipelineError(
+            EXIT_POST_SWAP,
+            "compatibility metadata refresh failed after %d attempts: %s"
+            % (COMPAT_REFRESH_ATTEMPTS, last),
+        )
+
+    def prune(self):
+        entries = sorted(
+            (
+                entry
+                for entry in self.releases_dir.iterdir()
+                if entry.is_dir() and TS_RE.match(entry.name)
+            ),
+            key=lambda path: path.name,
+            reverse=True,
+        )
+        current_name = None
+        try:
+            current_name = Path(os.readlink(self.current_link)).name
+        except OSError:
+            pass
+        keep = {entry.name for entry in entries[:KEEP_RELEASES]} | {current_name}
+        for entry in entries:
+            if entry.name in keep:
+                continue
+            LOG.info("prune: removing %s", entry)
+            try:
+                shutil.rmtree(entry)
+            except OSError as err:
+                LOG.warning("prune: refusing to fail the deploy: %s", err)
+
+    def cleanup_stale_work(self):
+        if not self.work_root.is_dir():
+            return
+        cutoff = time.time() - STALE_WORK_HOURS * 3600
+        for entry in self.work_root.iterdir():
+            try:
+                mtime = entry.lstat().st_mtime
+            except OSError:
+                continue
+            if mtime < cutoff:
+                LOG.info("stale-work cleanup: removing %s", entry)
+                shutil.rmtree(entry, ignore_errors=True)
+
+    # ---- driver ----------------------------------------------------------
+    def run(self):
+        args = self.args
+        self.preflight()
+        live = self.live_commit()
+        if not (args.build_only or args.simulate_build_failure) and live == self.commit:
+            self.repair_compat_metadata_if_stale(self.live_release())
+            LOG.info(
+                "noop: commit %s is already live; nothing built, swapped or pruned",
+                self.commit,
+            )
+            return EXIT_OK
+        if args.build_only or args.simulate_build_failure:
+            LOG.info("live-commit no-op check bypassed (manual test mode)")
+        self.fetch()
+        self.extract()
+        self.build()
+        build_utc = utcnow()
+        if args.build_only:
+            LOG.info(
+                "build-only: measurement complete; no release created,"
+                " current untouched"
+            )
+            shutil.rmtree(self.work_dir, ignore_errors=True)
+            return EXIT_OK
+        release = self.create_release()
+        try:
+            self.nginx_test()
+            self.write_metadata(release, build_utc)
+        except PipelineError as err:
+            LOG.error("pre-activation step failed: %s", err)
+            shutil.rmtree(release, ignore_errors=True)
+            raise
+        except OSError as err:
+            LOG.error("pre-activation file step failed: %s", err)
+            shutil.rmtree(release, ignore_errors=True)
+            raise PipelineError(EXIT_PRE_ACTIVATION, "pre-activation failed: %s" % err)
+        try:
+            self.activate(release)
+        except OSError as err:
+            LOG.error("activation failed; current left unchanged: %s", err)
+            tmp = Path(str(self.current_link) + ".tmp")
+            try:
+                if tmp.is_symlink() or tmp.exists():
+                    tmp.unlink()
+            except OSError:
+                pass
+            raise PipelineError(EXIT_PRE_ACTIVATION, "activation failed: %s" % err)
+        try:
+            self.nginx_test(EXIT_POST_SWAP)
+            self.smoke_check(release)
+        except PipelineError as err:
+            self.restore_previous(str(err))
+            raise
+        try:
+            self.reload_nginx()
+        except PipelineError as err:
+            self.restore_previous("nginx reload failed: %s" % err)
+            raise
+        # Post-swap success steps.  The compatibility record is retried; a
+        # persistent failure exits 6 (the verified release stays live, nothing
+        # is swapped back) and the next attempt repairs the record via the
+        # no-op path instead of skipping it.
+        self.refresh_compat_metadata(release)
+        try:
+            self.prune()
+            self.cleanup_stale_work()
+        except Exception as err:  # cleanup must never fail a verified deploy
+            LOG.warning("post-success cleanup reported: %s", err)
+        LOG.info("deploy success: %s now serves %s", self.site, release.name)
+        return EXIT_OK
+
+
+def load_config(config_dir, site):
+    path = Path(config_dir) / ("%s.json" % site)
+    if not path.is_file():
+        raise PipelineError(EXIT_USAGE, "site config not found: %s" % path)
+    return json.loads(path.read_text())
+
+
+def acquire_lock(lock_file):
+    import fcntl
+
+    path = Path(lock_file)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(path, os.O_CREAT | os.O_RDWR, 0o600)
+    fcntl.flock(fd, fcntl.LOCK_EX)
+    return fd
+
+
+def enforce_work_traversal(*paths):
+    """Make the state/work chain traverse-only for the unprivileged build user.
+
+    ``yrds-build`` is locked (no login, no sudo) and must only be able to
+    cross these directories to reach its build workspace -- never to list or
+    write them.  They stay root-owned; only the group/other execute bit is
+    granted (0711).  Enforced idempotently on every run so a state dir left
+    0700 by an older receiver, or a work chain created under the service
+    UMask=0077, is repaired on creation and on reuse.
+    """
+    for path in paths:
+        try:
+            os.chmod(path, WORK_TRAVERSAL_MODE)
+        except OSError as err:
+            raise PipelineError(
+                EXIT_USAGE,
+                "cannot enforce %o on %s: %s" % (WORK_TRAVERSAL_MODE, path, err),
+            ) from err
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--site", required=True)
+    parser.add_argument("--commit", required=True)
+    parser.add_argument("--source", required=True, choices=sorted(SOURCE_LABELS))
+    parser.add_argument("--run-id")
+    parser.add_argument("--config-dir", default="/etc/7yrds-deploy/sites.d")
+    parser.add_argument("--build-only", action="store_true")
+    parser.add_argument("--simulate-build-failure", action="store_true")
+    parser.add_argument("--no-lock", action="store_true")
+    args = parser.parse_args(argv)
+
+    if os.geteuid() != 0:
+        print("deploy-site must run as root", file=sys.stderr)
+        return EXIT_USAGE
+    if not SHA_RE.match(args.commit):
+        print("commit must be a full 40-hex SHA", file=sys.stderr)
+        return EXIT_USAGE
+    if args.run_id is not None and not valid_run_id(args.run_id):
+        print(
+            "run-id must be filename-safe (letters, digits, . _ -;"
+            " not '.' or '..')",
+            file=sys.stderr,
+        )
+        return EXIT_USAGE
+    if args.build_only and args.simulate_build_failure:
+        print("cannot combine --build-only with --simulate-build-failure", file=sys.stderr)
+        return EXIT_USAGE
+    test_mode = args.build_only or args.simulate_build_failure
+    if args.source == "manual-test":
+        if not test_mode:
+            print(
+                "--source manual-test requires --build-only or"
+                " --simulate-build-failure",
+                file=sys.stderr,
+            )
+            return EXIT_USAGE
+    elif test_mode:
+        print(
+            "test modes (--build-only/--simulate-build-failure) are root/"
+            "manual-test only and refused for source %s" % args.source,
+            file=sys.stderr,
+        )
+        return EXIT_USAGE
+
+    try:
+        cfg = load_config(args.config_dir, args.site)
+    except PipelineError as err:
+        print(err, file=sys.stderr)
+        return err.exit_code
+    run_id = args.run_id or ("run-%s-%s" % (utc_stamp(), uuid.uuid4().hex[:8]))
+    setup_logging(cfg["log_dir"], run_id)
+    LOG.info(
+        "deploy-site start site=%s commit=%s source=%s run_id=%s pid=%d",
+        args.site,
+        args.commit,
+        args.source,
+        run_id,
+        os.getpid(),
+    )
+
+    lock_fd = None
+    try:
+        if not args.no_lock:
+            lock_fd = acquire_lock(cfg["lock_file"])
+            LOG.info("per-site flock acquired: %s", cfg["lock_file"])
+        try:
+            build_user = cfg.get("build_user", "yrds-build")
+            record = pwd.getpwnam(build_user)
+        except KeyError:
+            raise PipelineError(
+                EXIT_USAGE, "build user %s does not exist" % build_user
+            )
+        work_dir = Path(cfg["state_dir"]) / "work" / args.site / run_id
+        pipeline = Pipeline(cfg, args, run_id, work_dir)
+        pipeline.uid = record.pw_uid
+        pipeline.gid = record.pw_gid
+        pipeline.work_root.mkdir(parents=True, exist_ok=True)
+        state_dir = Path(cfg["state_dir"])
+        # The build user must be able to cross the state/work chain to reach
+        # its workspace; enforced on creation and on reuse (an older receiver
+        # or the service UMask=0077 may have left these root-only 0700).
+        enforce_work_traversal(state_dir, state_dir / "work", pipeline.work_root)
+        exit_code = pipeline.run()
+        LOG.info("deploy-site done exit=%d", exit_code)
+        return exit_code
+    except PipelineError as err:
+        LOG.error("deploy-site failed exit=%s: %s", err.exit_code, err)
+        return err.exit_code
+    finally:
+        if lock_fd is not None:
+            import fcntl
+
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            os.close(lock_fd)
+
+
+if __name__ == "__main__":
+    sys.exit(main())
