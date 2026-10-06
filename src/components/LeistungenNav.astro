@@ -10,7 +10,7 @@ const services = [
   { label: "Stahlhallenbau", href: "/leistungen/stahlhallenbau" },
   { label: "Photovoltaikanlagen", href: "/leistungen/photovoltaikanlagen" },
 ];
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\/$/, "");
 ---
 <section class="relative bg-ink flex flex-col items-center pt-5 pb-10 w-full overflow-hidden">
   <CornerGrid class="absolute -top-1 -left-1 w-78.75 h-60.5 opacity-20 rotate-180 z-0" />
@@ -23,14 +23,14 @@ const currentPath = Astro.url.pathname;
   </div>
 </section>
 
-<nav aria-label="Leistungen" class="bg-skyblue flex items-center gap-3.25 justify-start px-2 md:px-2.25 overflow-x-auto w-full">
+<nav aria-label="Leistungen" class="bg-skyblue border-b border-black flex items-center gap-3.25 justify-start xl:justify-center px-2 md:px-2.25 overflow-x-auto w-full">
   {services.map((s) => (
     <a
       href={s.href}
       class:list={[
         "flex items-center h-17.75 px-3.75 shrink-0 text-[15px] leading-[1.2] whitespace-nowrap border-b-4",
         currentPath === s.href
-          ? "font-extrabold text-ink border-ink"
+          ? "font-extrabold text-[#171b1f] border-[#171b1f]"
           : "font-medium text-ink border-transparent hover:border-ink/30",
       ]}
     >

@@ -10,7 +10,7 @@ const isActiveLink = (href: string) => {
   return currentPath === section || currentPath.startsWith(`${section}/`);
 };
 ---
-<header class="relative bg-white flex flex-col justify-center overflow-visible px-5 md:px-10 rounded-2xl shadow-[0px_6px_24px_0px_rgba(0,0,0,0.08)] w-full max-w-7xl mx-auto">
+<header class="relative bg-white flex flex-col justify-center overflow-visible px-5 md:px-10 xl:px-20 rounded-2xl shadow-[0px_6px_24px_0px_rgba(0,0,0,0.08)] w-full max-w-7xl mx-auto">
   <input type="checkbox" id="mobile-nav-toggle" class="peer hidden" />
 
   <div class="flex items-center justify-between w-full gap-4 h-16 md:h-20 peer-checked:[&_.icon-open]:hidden peer-checked:[&_.icon-close]:block">
@@ -59,7 +59,7 @@ const isActiveLink = (href: string) => {
     </label>
   </div>
 
-  <div class="hidden peer-checked:flex xl:hidden flex-col items-start gap-1 pb-5 w-full border-t border-sand pt-4">
+  <div class="hidden peer-checked:flex xl:hidden flex-col items-start gap-1 pb-5 w-full border-t border-sand pt-4 max-h-[calc(100dvh-8rem)] overflow-y-auto">
     {navItems.map((item) => (
       <a
         href={item.href}

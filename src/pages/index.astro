@@ -44,7 +44,7 @@ const stats = [
 
 const services = [
   {
-    title: "Generalunternehmer- leistungen",
+    title: "General\u00ADunternehmer\u00ADleistungen",
     image: service1,
     href: "/leistungen/generalunternehmer",
   },
@@ -74,7 +74,7 @@ const services = [
     href: "/leistungen/stahlhallenbau",
   },
   {
-    title: "Photovoltaikanlagen",
+    title: "Photovoltaik\u00ADanlagen",
     image: service7,
     href: "/leistungen/photovoltaikanlagen",
   },
@@ -132,18 +132,19 @@ const services = [
       </div>
     </div>
 
-    <div class="relative z-20 bg-skyblue w-full max-w-7xl p-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-px bg-skyblueLine">
+    <div class="relative z-20 bg-skyblue w-full max-w-7xl">
+      <div class="grid grid-cols-3 xl:grid-cols-5 gap-px bg-skyblueLine">
       {
         audiences.map((a) => (
-          <div class="bg-skyblue flex items-center gap-3 p-3 sm:p-5 sm:last:col-span-2 xl:last:col-span-1">
-            <Image src={a.icon} alt="" class="size-14 sm:size-20 shrink-0" loading="eager" />
-            <p class="font-bold text-base text-black leading-normal">
+          <div class="bg-skyblue flex flex-col xl:flex-row items-start xl:items-center gap-2 xl:gap-3 p-3 sm:p-3 min-w-0">
+            <Image src={a.icon} alt={a.label} class="size-11 sm:size-16 xl:size-20 shrink-0" loading="eager" />
+            <p class="font-bold text-sm sm:text-base text-black leading-normal wrap-break-word hyphens-auto w-full">
               {a.label}
             </p>
           </div>
         ))
       }
+        <div class="bg-skyblue xl:hidden" aria-hidden="true"></div>
       </div>
     </div>
   </section>
@@ -223,7 +224,7 @@ const services = [
     </div>
     <Image
       src={iconStatExperience}
-      alt=""
+      alt="stat icon"
       class="hidden lg:block absolute left-10 top-30.75 h-28.25 w-50.25 pointer-events-none"
       loading="lazy"
     />
@@ -240,7 +241,7 @@ const services = [
     </div>
     <Image
       src={iconStatRevenue}
-      alt=""
+      alt="stat icon"
       class="hidden lg:block absolute bottom-0.5 right-0.5 h-[116.5px] w-[280.5px] pointer-events-none"
       loading="lazy"
     />
@@ -276,12 +277,12 @@ const services = [
       <Button href="/leistungen">zu Dienstleistungen</Button>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 w-full">
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 w-full">
       {
         services.map((s) => (
           <a
             href={s.href}
-            class="relative z-0 border border-[#a9b9d6] flex flex-col h-56.25 items-end justify-between p-5 overflow-hidden group"
+            class="relative z-0 border border-[#a9b9d6] flex flex-col h-40 sm:h-56.25 items-end justify-between p-4 sm:p-5 overflow-hidden group"
           >
             <Image
               src={s.image}
@@ -290,7 +291,7 @@ const services = [
               loading="lazy"
             />
             <div class="absolute inset-0 bg-black/40 z-10" />
-            <p class="relative z-20 font-normal text-2xl xl:text-[28px] text-left text-white leading-[1.2] w-full hyphens-auto break-words">
+            <p class="relative z-20 font-normal text-base sm:text-2xl xl:text-[28px] text-left text-white leading-[1.4] sm:leading-[1.2] w-full hyphens-auto break-words">
               {s.title}
             </p>
           </a>
@@ -298,10 +299,10 @@ const services = [
       }
       <a
         href="/leistungen"
-        class="bg-accent border border-accent flex flex-col h-56.25 items-end justify-between p-5"
+        class="bg-accent border border-accent flex flex-col h-40 sm:h-56.25 items-end justify-between p-4 sm:p-5"
       >
         <p
-          class="font-normal text-2xl xl:text-[28px] text-left text-white leading-[1.2] w-full"
+          class="font-normal text-base sm:text-2xl xl:text-[28px] text-left text-white leading-[1.4] sm:leading-[1.2] w-full"
         >
           Mehr erfahren
         </p>
