@@ -32,7 +32,7 @@ const audiences = [
   { label: "Private Auftraggeber", icon: iconPrivate },
   { label: "Gewerbliche Bauherren", icon: iconGewerbe },
   { label: "Öffentliche Hand", icon: iconOeffentlicheHand },
-  { label: "Projektentwickler", icon: iconProjektentwickler },
+  { label: "Projekt\u00ADentwickler", icon: iconProjektentwickler },
   { label: "Architekten & Planer", icon: iconArchitekten },
 ];
 
@@ -137,7 +137,9 @@ const services = [
       {
         audiences.map((a) => (
           <div class="bg-skyblue flex flex-col xl:flex-row items-start xl:items-center gap-2 xl:gap-3 p-3 sm:p-3 min-w-0">
-            <Image src={a.icon} alt={a.label} class="size-11 sm:size-16 xl:size-20 shrink-0" loading="eager" />
+            <span class="flex items-center h-11 sm:h-16 xl:h-20 xl:w-20 xl:justify-center shrink-0">
+              <Image src={a.icon} alt={a.label} class="h-9 sm:h-12 xl:h-14 w-auto max-w-full" loading="eager" />
+            </span>
             <p class="font-bold text-sm sm:text-base text-black leading-normal wrap-break-word hyphens-auto w-full">
               {a.label}
             </p>
@@ -249,7 +251,7 @@ const services = [
 </section>
 
   <!-- Construction photo banner -->
-  <section class="flex flex-col h-125 md:h-158.75 items-start px-6 w-full">
+  <section class="flex flex-col h-125 md:h-auto md:aspect-video md:min-h-158.75 md:max-h-220 items-start px-6 w-full">
     <Image
       src={constructionPhoto}
       alt="Bauarbeiter auf einer Baustelle"
@@ -291,7 +293,7 @@ const services = [
               loading="lazy"
             />
             <div class="absolute inset-0 bg-black/40 z-10" />
-            <p class="relative z-20 font-normal text-base sm:text-2xl xl:text-[28px] text-left text-white leading-[1.4] sm:leading-[1.2] w-full hyphens-auto break-words">
+            <p class="relative z-20 font-normal text-base sm:text-2xl xl:text-[28px] text-left text-white leading-[1.4] sm:leading-[1.2] w-full hyphens-auto wrap-break-word">
               {s.title}
             </p>
           </a>
